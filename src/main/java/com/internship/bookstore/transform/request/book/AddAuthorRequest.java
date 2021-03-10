@@ -1,6 +1,5 @@
 package com.internship.bookstore.transform.request.book;
 
-import com.internship.bookstore.entity.genre.Genre;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -9,18 +8,10 @@ import javax.validation.constraints.NotEmpty;
  * @author Gurgen Poghosyan
  */
 @Data
-public class BookCreateRequest {
-
+public class AddAuthorRequest {
     @NotEmpty
-    private String name;
-
-    @NotEmpty
-    private String date;
-
-    @NotEmpty
-    private String genreName;
+    private Long bookId;
 
     @NotEmpty
     private Long authorId;
-
 }

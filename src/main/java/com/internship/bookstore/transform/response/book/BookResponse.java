@@ -1,5 +1,6 @@
 package com.internship.bookstore.transform.response.book;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.internship.bookstore.entity.author.Author;
 import com.internship.bookstore.entity.genre.Genre;
 import lombok.Data;

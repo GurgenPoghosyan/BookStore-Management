@@ -1,5 +1,6 @@
 package com.internship.bookstore.entity.book;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.internship.bookstore.entity.author.Author;
 import com.internship.bookstore.entity.genre.Genre;
 import lombok.Getter;
@@ -31,31 +32,15 @@ public class Book {
     @Column(name = "date_of_publication")
     private String date;
 
-    @Column(name = "genre")
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Genre> genres;
+    @ManyToMany()
+    private List<Genre> genres = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
-    private List<Author> authors;
-
-    public void addAuthorToBook(Author author){
-        if (authors==null){
-            authors=new ArrayList<>();
-        }
-        authors.add(author);
-    }
-
-    public void addGenreToBook(Genre genre){
-        if (genres==null){
-            genres=new ArrayList<>();
-        }
-        genres.add(genre);
-    }
-
-
+    @JsonIgnore
+    private List<Author> authors = new ArrayList<>();
 }

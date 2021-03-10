@@ -30,23 +30,16 @@ public class Author {
     @Column(name = "surname")
     private String surname;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "author_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
-    private List<Book> books;
+    private List<Book> books = new ArrayList<>();
 
     public Author(String name, String surname) {
         this.name = name;
         this.surname = surname;
-    }
-
-    public void addBookToAuthor(Book book){
-        if (books==null){
-            books=new ArrayList<>();
-        }
-        books.add(book);
     }
 }
