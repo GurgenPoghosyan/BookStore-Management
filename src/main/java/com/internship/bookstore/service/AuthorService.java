@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class AuthorService implements CRUDService<AuthorCreateRequest, AuthorUpdateRequest,ResponseEntity<AuthorDto>,Long> {
+public class AuthorService implements CRUDService<AuthorCreateRequest, AuthorUpdateRequest,AuthorDto,Long> {
 
     private final AuthorRepository authorRepository;
 
@@ -31,21 +31,19 @@ public class AuthorService implements CRUDService<AuthorCreateRequest, AuthorUpd
     }
 
     @Override
-    public ResponseEntity<AuthorDto> create(AuthorCreateRequest createRequest) {
+    public AuthorDto create(AuthorCreateRequest createRequest) {
         AuthorEntity authorEntity = new AuthorEntity();
         BeanUtils.copyProperties(createRequest, authorEntity);
         AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
         AuthorDto authorDto = new AuthorDto();
         BeanUtils.copyProperties(savedAuthorEntity,authorDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(authorDto);
+        return authorDto;
     }
 
     @Override
-    public ResponseEntity<AuthorDto> get(Long id) {
+    public AuthorDto get(Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        AuthorDto authorDto = new AuthorDto();
-        BeanUtils.copyProperties(authorEntity,authorDto);
-        return ResponseEntity.ok(authorDto);
+        return AuthorDto.mapEntityToDto(authorEntity);
     }
 
     public List<AuthorEntity> getAuthorData(String name) {
@@ -56,13 +54,11 @@ public class AuthorService implements CRUDService<AuthorCreateRequest, AuthorUpd
     }
 
     @Override
-    public ResponseEntity<AuthorDto> update(AuthorUpdateRequest updateRequest, Long id) {
+    public AuthorDto update(AuthorUpdateRequest updateRequest, Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
         BeanUtils.copyProperties(updateRequest, authorEntity);
         AuthorEntity updatedAuthorEntity = authorRepository.save(authorEntity);
-        AuthorDto authorDto = new AuthorDto();
-        BeanUtils.copyProperties(updatedAuthorEntity,authorDto);
-        return ResponseEntity.ok(authorDto);
+        return AuthorDto.mapEntityToDto(updatedAuthorEntity);
     }
 
     @Override
@@ -71,8 +67,9 @@ public class AuthorService implements CRUDService<AuthorCreateRequest, AuthorUpd
         authorRepository.delete(authorEntity);
     }
 
-    public List<BookEntity> getAuthorBooks(Long id) {
+    public List<String> getAuthorBooks(Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        return authorEntity.getBookEntities();
+        AuthorDto dto = AuthorDto.mapEntityToDto(authorEntity);
+        return dto.getBooks();
     }
 }

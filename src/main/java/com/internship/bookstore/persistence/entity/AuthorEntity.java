@@ -35,10 +35,18 @@ public class AuthorEntity {
             joinColumns = @JoinColumn(name = "author_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
-    private List<BookEntity> bookEntities = new ArrayList<>();
+    private List<BookEntity> books = new ArrayList<>();
 
     public AuthorEntity(String name, String surname) {
         this.name = name;
         this.surname = surname;
+    }
+
+    @Override
+    public String toString() {
+        return "AuthorEntity{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
     }
 }

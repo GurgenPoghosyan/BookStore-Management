@@ -7,6 +7,7 @@ import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.transform.request.author.AuthorCreateRequest;
 import com.internship.bookstore.transform.request.author.AuthorUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +28,15 @@ public class AuthorController {
     }
 
     @PostMapping()
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorCreateRequest request){
-        return authorService.create(request);
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorCreateRequest request) {
+        AuthorDto dto = authorService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id){
-        return authorService.get(id);
+    public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id) {
+        AuthorDto dto = authorService.get(id);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping
@@ -42,18 +45,19 @@ public class AuthorController {
     }
 
     @GetMapping("/{id}/books")
-    public  List<BookEntity> getAuthorBooks(@PathVariable Long id){
+    public List<String> getAuthorBooks(@PathVariable Long id) {
         return authorService.getAuthorBooks(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id,
-                                   @RequestBody AuthorUpdateRequest updateRequest){
-        return authorService.update(updateRequest,id);
+                                                  @RequestBody AuthorUpdateRequest updateRequest) {
+        AuthorDto dto = authorService.update(updateRequest, id);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAuthor(@PathVariable Long id){
+    public void deleteAuthor(@PathVariable Long id) {
         authorService.delete(id);
     }
 }

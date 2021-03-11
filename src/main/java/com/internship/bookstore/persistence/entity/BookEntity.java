@@ -31,7 +31,7 @@ public class BookEntity {
     private String date;
 
     @ManyToMany()
-    private List<GenreEntity> genreEntities = new ArrayList<>();
+    private List<GenreEntity> genres = new ArrayList<>();
 
     @ManyToMany()
     @JoinTable(
@@ -40,5 +40,7 @@ public class BookEntity {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     @JsonIgnore
-    private List<AuthorEntity> authorEntities = new ArrayList<>();
+    private List<AuthorEntity> authors = new ArrayList<>();
+
+
 }

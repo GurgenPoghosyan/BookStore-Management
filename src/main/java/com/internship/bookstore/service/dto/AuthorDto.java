@@ -1,9 +1,12 @@
 package com.internship.bookstore.service.dto;
 
+import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.entity.BookEntity;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Gurgen Poghosyan
@@ -17,6 +20,21 @@ public class AuthorDto {
 
     private String surname;
 
-    private List<BookEntity> bookEntities;
+    private List<String> books;
+
+    public static AuthorDto mapEntityToDto(AuthorEntity entity){
+        if (entity==null) {
+            return null;
+        }
+        AuthorDto dto= new AuthorDto();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setSurname(entity.getSurname());
+        List<BookEntity> listOfBooks = entity.getBooks();
+        if(!CollectionUtils.isEmpty(listOfBooks)){
+            dto.setBooks(listOfBooks.stream().map(BookEntity::getName).collect(Collectors.toList()));
+        }
+        return dto;
+    }
 
 }

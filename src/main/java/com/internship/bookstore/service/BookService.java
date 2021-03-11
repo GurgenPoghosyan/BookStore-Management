@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequest,ResponseEntity<BookDto>,Long> {
+public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequest,BookDto,Long> {
 
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
@@ -41,27 +41,23 @@ public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequ
     }
 
     @Override
-    public ResponseEntity<BookDto> create(BookCreateRequest createRequest) {
+    public BookDto create(BookCreateRequest createRequest) {
         BookEntity bookEntity = new BookEntity();
         BeanUtils.copyProperties(createRequest, bookEntity);
         GenreEntity genreEntity = genreRepository.findByGenreName(createRequest.getGenreName()).
                 orElseThrow(() -> new GenreNotFoundException(createRequest.getGenreName()));
         AuthorEntity authorEntity = authorRepository.findById(createRequest.getAuthorId()).
                 orElseThrow(() -> new AuthorNotFoundException(createRequest.getAuthorId()));
-        bookEntity.getGenreEntities().add(genreEntity);
-        bookEntity.getAuthorEntities().add(authorEntity);
+        bookEntity.getGenres().add(genreEntity);
+        bookEntity.getAuthors().add(authorEntity);
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
-        BookDto bookDto = new BookDto();
-        BeanUtils.copyProperties(savedBookEntity,bookDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookDto);
+        return BookDto.mapEntityToDto(savedBookEntity);
     }
 
     @Override
-    public ResponseEntity<BookDto> get(Long id) {
+    public BookDto get(Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        BookDto bookDto = new BookDto();
-        BeanUtils.copyProperties(bookEntity,bookDto);
-        return ResponseEntity.ok(bookDto);
+        return BookDto.mapEntityToDto(bookEntity);
     }
 
     public List<BookEntity> getBookData(String name) {
@@ -78,25 +74,24 @@ public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequ
     }
 
     @Override
-    public ResponseEntity<BookDto> update(BookUpdateRequest updateRequest, Long id) {
+    public BookDto update(BookUpdateRequest updateRequest, Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         BeanUtils.copyProperties(updateRequest, bookEntity);
         BookEntity updatedBookEntity = bookRepository.save(bookEntity);
-        BookDto bookDto = new BookDto();
-        BeanUtils.copyProperties(updatedBookEntity,bookDto);
-        return ResponseEntity.ok(bookDto);
+        return BookDto.mapEntityToDto(updatedBookEntity);
     }
 
-    public List<AuthorEntity> getBookAuthors(Long id) {
+    public List<String> getBookAuthors(Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        return bookEntity.getAuthorEntities();
+        BookDto dto = BookDto.mapEntityToDto(bookEntity);
+        return dto.getAuthors();
     }
 
     public ResponseEntity<BookDto> addAuthorToBook(Long bookId, Long authorId) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
         AuthorEntity authorEntity = authorRepository.findById(authorId).
                 orElseThrow(() -> new AuthorNotFoundException(authorId));
-        bookEntity.getAuthorEntities().add(authorEntity);
+        bookEntity.getAuthors().add(authorEntity);
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
         BookDto bookDto = new BookDto();
         BeanUtils.copyProperties(savedBookEntity,bookDto);

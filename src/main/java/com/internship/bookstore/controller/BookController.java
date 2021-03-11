@@ -8,6 +8,7 @@ import com.internship.bookstore.transform.request.book.AddAuthorRequest;
 import com.internship.bookstore.transform.request.book.BookCreateRequest;
 import com.internship.bookstore.transform.request.book.BookUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,12 +30,14 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<BookDto> createBook(@RequestBody BookCreateRequest request) {
-        return bookService.create(request);
+        BookDto dto = bookService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
-        return bookService.get(id);
+        BookDto dto = bookService.get(id);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping
@@ -44,8 +47,9 @@ public class BookController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
-                                           @RequestBody BookUpdateRequest updateRequest) {
-        return bookService.update(updateRequest, id);
+                                              @RequestBody BookUpdateRequest updateRequest) {
+        BookDto dto = bookService.update(updateRequest, id);
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")
@@ -54,12 +58,12 @@ public class BookController {
     }
 
     @GetMapping("/{id}/authors")
-    public  List<AuthorEntity> getBookAuthors(@PathVariable Long id){
+    public List<String> getBookAuthors(@PathVariable Long id) {
         return bookService.getBookAuthors(id);
     }
 
     @PutMapping()
-    public ResponseEntity<BookDto> addGenreToBook(@RequestBody AddAuthorRequest request){
-        return  bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
+    public ResponseEntity<BookDto> addGenreToBook(@RequestBody AddAuthorRequest request) {
+        return bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
     }
 }

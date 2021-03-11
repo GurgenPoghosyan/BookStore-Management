@@ -20,4 +20,6 @@ public class CollectionDto {
     private List<BookEntity> bookEntities = new ArrayList<>();
 
     private GenreEntity genreEntity;
+
+
 }
