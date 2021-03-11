@@ -1,6 +1,5 @@
-package com.internship.bookstore.entity.author;
+package com.internship.bookstore.persistence.entity;
 
-import com.internship.bookstore.entity.book.Book;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Author {
+public class AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +35,9 @@ public class Author {
             joinColumns = @JoinColumn(name = "author_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
-    private List<Book> books = new ArrayList<>();
+    private List<BookEntity> bookEntities = new ArrayList<>();
 
-    public Author(String name, String surname) {
+    public AuthorEntity(String name, String surname) {
         this.name = name;
         this.surname = surname;
     }

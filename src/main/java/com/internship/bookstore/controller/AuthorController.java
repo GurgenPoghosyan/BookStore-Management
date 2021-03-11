@@ -1,8 +1,9 @@
-package com.internship.bookstore.controller.author;
+package com.internship.bookstore.controller;
 
-import com.internship.bookstore.entity.author.Author;
-import com.internship.bookstore.entity.book.Book;
-import com.internship.bookstore.service.author.AuthorService;
+import com.internship.bookstore.persistence.entity.AuthorEntity;
+import com.internship.bookstore.persistence.entity.BookEntity;
+import com.internship.bookstore.service.AuthorService;
+import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.transform.request.author.AuthorCreateRequest;
 import com.internship.bookstore.transform.request.author.AuthorUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,27 +27,27 @@ public class AuthorController {
     }
 
     @PostMapping()
-    public ResponseEntity<Author> createAuthor(@RequestBody AuthorCreateRequest request){
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorCreateRequest request){
         return authorService.create(request);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Author> getAuthor(@PathVariable Long id){
+    public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id){
         return authorService.get(id);
     }
 
     @GetMapping
-    public List<Author> getAuthors(@RequestParam(value = "name", required = false) String name) {
+    public List<AuthorEntity> getAuthors(@RequestParam(value = "name", required = false) String name) {
         return authorService.getAuthorData(name);
     }
 
     @GetMapping("/{id}/books")
-    public  List<Book> getAuthorBooks(@PathVariable Long id){
+    public  List<BookEntity> getAuthorBooks(@PathVariable Long id){
         return authorService.getAuthorBooks(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Author> updateBook(@PathVariable Long id,
+    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id,
                                    @RequestBody AuthorUpdateRequest updateRequest){
         return authorService.update(updateRequest,id);
     }

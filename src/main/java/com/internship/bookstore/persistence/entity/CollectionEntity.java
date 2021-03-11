@@ -1,8 +1,5 @@
-package com.internship.bookstore.entity.collection;
+package com.internship.bookstore.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.internship.bookstore.entity.book.Book;
-import com.internship.bookstore.entity.genre.Genre;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Collection {
+public class CollectionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +27,8 @@ public class Collection {
     private String name;
 
     @OneToMany
-    private List<Book> books = new ArrayList<>();
+    private List<BookEntity> bookEntities = new ArrayList<>();
 
     @OneToOne
-    private Genre genre;
+    private GenreEntity genreEntity;
 }

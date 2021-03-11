@@ -1,7 +1,7 @@
 package com.internship.bookstore;
 
-import com.internship.bookstore.entity.genre.Genre;
-import com.internship.bookstore.persistence.genre.GenreRepository;
+import com.internship.bookstore.persistence.entity.GenreEntity;
+import com.internship.bookstore.persistence.repository.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,9 +22,9 @@ public class BookStoreApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Genre classic=new Genre("classic");
-        Genre historical=new Genre("historical");
-        Genre fantasy=new Genre("fantasy");
+        GenreEntity classic=new GenreEntity("classic");
+        GenreEntity historical=new GenreEntity("historical");
+        GenreEntity fantasy=new GenreEntity("fantasy");
         genreRepository.saveAll(List.of(classic,historical,fantasy));
     }
 }

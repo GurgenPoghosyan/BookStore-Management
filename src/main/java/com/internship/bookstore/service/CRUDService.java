@@ -1,4 +1,4 @@
-package com.internship.bookstore.service.author;
+package com.internship.bookstore.service;
 
 /**
  * @author Gurgen Poghosyan

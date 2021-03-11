@@ -1,8 +1,6 @@
-package com.internship.bookstore.entity.book;
+package com.internship.bookstore.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.internship.bookstore.entity.author.Author;
-import com.internship.bookstore.entity.genre.Genre;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Book {
+public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +31,7 @@ public class Book {
     private String date;
 
     @ManyToMany()
-    private List<Genre> genres = new ArrayList<>();
+    private List<GenreEntity> genreEntities = new ArrayList<>();
 
     @ManyToMany()
     @JoinTable(
@@ -42,5 +40,5 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     @JsonIgnore
-    private List<Author> authors = new ArrayList<>();
+    private List<AuthorEntity> authorEntities = new ArrayList<>();
 }

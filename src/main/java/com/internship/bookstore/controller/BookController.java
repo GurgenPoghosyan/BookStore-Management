@@ -1,8 +1,9 @@
-package com.internship.bookstore.controller.book;
+package com.internship.bookstore.controller;
 
-import com.internship.bookstore.entity.author.Author;
-import com.internship.bookstore.entity.book.Book;
-import com.internship.bookstore.service.book.BookService;
+import com.internship.bookstore.persistence.entity.AuthorEntity;
+import com.internship.bookstore.persistence.entity.BookEntity;
+import com.internship.bookstore.service.BookService;
+import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.transform.request.book.AddAuthorRequest;
 import com.internship.bookstore.transform.request.book.BookCreateRequest;
 import com.internship.bookstore.transform.request.book.BookUpdateRequest;
@@ -27,22 +28,22 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody BookCreateRequest request) {
+    public ResponseEntity<BookDto> createBook(@RequestBody BookCreateRequest request) {
         return bookService.create(request);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBook(@PathVariable Long id) {
+    public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
         return bookService.get(id);
     }
 
     @GetMapping
-    public List<Book> getBooks(@RequestParam(value = "name", required = false) String name) {
+    public List<BookEntity> getBooks(@RequestParam(value = "name", required = false) String name) {
         return bookService.getBookData(name);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id,
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
                                            @RequestBody BookUpdateRequest updateRequest) {
         return bookService.update(updateRequest, id);
     }
@@ -53,12 +54,12 @@ public class BookController {
     }
 
     @GetMapping("/{id}/authors")
-    public  List<Author> getBookAuthors(@PathVariable Long id){
+    public  List<AuthorEntity> getBookAuthors(@PathVariable Long id){
         return bookService.getBookAuthors(id);
     }
 
     @PutMapping()
-    public ResponseEntity<Book> addGenreToBook(@RequestBody AddAuthorRequest request){
+    public ResponseEntity<BookDto> addGenreToBook(@RequestBody AddAuthorRequest request){
         return  bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
     }
 }

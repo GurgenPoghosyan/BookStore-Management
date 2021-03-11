@@ -1,6 +1,5 @@
 package com.internship.bookstore.transform.request.book;
 
-import com.internship.bookstore.entity.genre.Genre;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;

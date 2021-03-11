@@ -1,8 +1,8 @@
-package com.internship.bookstore.controller.collection;
+package com.internship.bookstore.controller;
 
-import com.internship.bookstore.entity.book.Book;
-import com.internship.bookstore.entity.collection.Collection;
-import com.internship.bookstore.service.collection.CollectionService;
+import com.internship.bookstore.persistence.entity.CollectionEntity;
+import com.internship.bookstore.service.CollectionService;
+import com.internship.bookstore.service.dto.CollectionDto;
 import com.internship.bookstore.transform.request.collection.AddBookToCollectionRequest;
 import com.internship.bookstore.transform.request.collection.CollectionCreateRequest;
 import com.internship.bookstore.transform.request.collection.CollectionUpdateRequset;
@@ -26,22 +26,22 @@ public class CollectionController {
         this.collectionService = collectionService;
     }
     @PostMapping
-    public ResponseEntity<Collection> createCollection(@RequestBody CollectionCreateRequest request) {
+    public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionCreateRequest request) {
         return collectionService.create(request);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Collection> getCollection(@PathVariable Long id) {
+    public ResponseEntity<CollectionDto> getCollection(@PathVariable Long id) {
         return collectionService.get(id);
     }
 
     @GetMapping
-    public List<Collection> getCollections(@RequestParam(value = "name", required = false) String name) {
+    public List<CollectionEntity> getCollections(@RequestParam(value = "name", required = false) String name) {
         return collectionService.getCollectionData(name);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Collection> updateCollection(@PathVariable Long id,
+    public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id,
                                            @RequestBody CollectionUpdateRequset updateRequest) {
         return collectionService.update(updateRequest, id);
     }
@@ -52,7 +52,7 @@ public class CollectionController {
     }
 
     @PutMapping()
-    public ResponseEntity<Collection> addBookToCollections(@RequestBody AddBookToCollectionRequest request){
+    public ResponseEntity<CollectionDto> addBookToCollections(@RequestBody AddBookToCollectionRequest request){
         return  collectionService.addBookToCollection(request.getBookId(), request.getCollectionId());
     }
 

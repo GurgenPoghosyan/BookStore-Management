@@ -1,4 +1,4 @@
-package com.internship.bookstore.entity.genre;
+package com.internship.bookstore.persistence.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Genre {
+public class GenreEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Genre {
     @Column(name = "genre")
     private String genreName;
 
-    public Genre(String genreName) {
+    public GenreEntity(String genreName) {
         this.genreName = genreName;
     }
 }
