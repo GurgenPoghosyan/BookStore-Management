@@ -1,5 +1,6 @@
 package com.internship.bookstore.persistence.entity;
 
+import com.internship.bookstore.service.dto.GenreDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,5 +27,14 @@ public class GenreEntity {
 
     public GenreEntity(String genreName) {
         this.genreName = genreName;
+    }
+
+    public static GenreEntity mapDtoToEntity(GenreDto genreDto) {
+        if (genreDto == null) {
+            return null;
+        }
+        GenreEntity genreEntity = new GenreEntity();
+        genreEntity.setGenreName(genreDto.getGenreName());
+        return genreEntity;
     }
 }

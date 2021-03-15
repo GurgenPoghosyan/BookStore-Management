@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
  * @author Gurgen Poghosyan
  */
 @Data
-public class AuthorUpdateRequest {
+public class AuthorUpdateRequestBody {
     @NotEmpty
     private String name;
 

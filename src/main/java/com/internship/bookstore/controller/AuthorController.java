@@ -1,11 +1,8 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.persistence.entity.AuthorEntity;
-import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.service.AuthorService;
 import com.internship.bookstore.service.dto.AuthorDto;
-import com.internship.bookstore.transform.request.author.AuthorCreateRequest;
-import com.internship.bookstore.transform.request.author.AuthorUpdateRequest;
+import com.internship.bookstore.service.model.AuthorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +17,7 @@ import java.util.List;
 @RequestMapping("api/v1/authors")
 public class AuthorController {
 
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
     @Autowired
     public AuthorController(AuthorService authorService) {
@@ -28,8 +25,8 @@ public class AuthorController {
     }
 
     @PostMapping()
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorCreateRequest request) {
-        AuthorDto dto = authorService.create(request);
+    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+        AuthorDto dto = authorService.create(authorDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -40,19 +37,19 @@ public class AuthorController {
     }
 
     @GetMapping
-    public List<AuthorEntity> getAuthors(@RequestParam(value = "name", required = false) String name) {
+    public List<AuthorWrapper> getAuthors(@RequestParam(value = "name", required = false) String name) {
         return authorService.getAuthorData(name);
     }
 
-    @GetMapping("/{id}/books")
-    public List<String> getAuthorBooks(@PathVariable Long id) {
-        return authorService.getAuthorBooks(id);
-    }
+//    @GetMapping("/{id}/books")
+//    public List<String> getAuthorBooks(@PathVariable Long id) {
+//        return authorService.getAuthorBooks(id);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id,
-                                                  @RequestBody AuthorUpdateRequest updateRequest) {
-        AuthorDto dto = authorService.update(updateRequest, id);
+                                                  @RequestBody AuthorDto authorDto) {
+        AuthorDto dto = authorService.update(authorDto, id);
         return ResponseEntity.ok(dto);
     }
 

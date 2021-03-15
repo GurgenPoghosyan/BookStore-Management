@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,9 +25,11 @@ public class CollectionEntity {
     @Column(name = "collection_name")
     private String name;
 
-    @OneToMany
-    private List<BookEntity> bookEntities = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "collections_books",
+            joinColumns = @JoinColumn(name = "collection_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
+    private List<BookEntity> books;
 
-    @OneToOne
-    private GenreEntity genreEntity;
 }

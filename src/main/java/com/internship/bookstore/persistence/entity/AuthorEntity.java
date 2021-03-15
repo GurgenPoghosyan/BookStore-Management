@@ -1,11 +1,11 @@
 package com.internship.bookstore.persistence.entity;
 
+import com.internship.bookstore.service.dto.AuthorDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,30 +23,23 @@ public class AuthorEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "author_name")
     private String name;
 
-    @Column(name = "surname")
-    private String surname;
-
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "author_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
-    private List<BookEntity> books = new ArrayList<>();
+    private List<BookEntity> books;
 
-    public AuthorEntity(String name, String surname) {
-        this.name = name;
-        this.surname = surname;
-    }
-
-    @Override
-    public String toString() {
-        return "AuthorEntity{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                '}';
+    public static AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
+        if (authorDto == null) {
+            return null;
+        }
+        AuthorEntity authorEntity = new AuthorEntity();
+        authorEntity.setName(authorDto.getName());
+        return authorEntity;
     }
 }

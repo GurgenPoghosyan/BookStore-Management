@@ -18,10 +18,6 @@ public class AuthorDto {
 
     private String name;
 
-    private String surname;
-
-    private List<String> books;
-
     public static AuthorDto mapEntityToDto(AuthorEntity entity){
         if (entity==null) {
             return null;
@@ -29,11 +25,6 @@ public class AuthorDto {
         AuthorDto dto= new AuthorDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setSurname(entity.getSurname());
-        List<BookEntity> listOfBooks = entity.getBooks();
-        if(!CollectionUtils.isEmpty(listOfBooks)){
-            dto.setBooks(listOfBooks.stream().map(BookEntity::getName).collect(Collectors.toList()));
-        }
         return dto;
     }
 

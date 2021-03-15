@@ -21,9 +21,9 @@ public class BookDto {
 
     private String date;
 
-    private List<String> genres;
+    private List<GenreDto> genres;
 
-    private List<String> authors;
+    private List<AuthorDto> authors;
 
     public static BookDto mapEntityToDto(BookEntity entity){
         if (entity==null) {
@@ -33,13 +33,13 @@ public class BookDto {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDate(entity.getDate());
-        List<GenreEntity> listOfGenres = entity.getGenres();
-        if(!CollectionUtils.isEmpty(listOfGenres)){
-            dto.setGenres(listOfGenres.stream().map(GenreEntity::getGenreName).collect(Collectors.toList()));
-        }
         List<AuthorEntity> listOfAuthors = entity.getAuthors();
         if(!CollectionUtils.isEmpty(listOfAuthors)){
-            dto.setAuthors(listOfAuthors.stream().map(e->listOfAuthors.toString()).collect(Collectors.toList()));
+            dto.setAuthors(listOfAuthors.stream().map(AuthorDto::mapEntityToDto).collect(Collectors.toList()));
+        }
+        List<GenreEntity> listOfGenres = entity.getGenres();
+        if(!CollectionUtils.isEmpty(listOfGenres)){
+            dto.setGenres(listOfGenres.stream().map(GenreDto::mapEntityToDto).collect(Collectors.toList()));
         }
         return dto;
     }

@@ -1,9 +1,9 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.persistence.entity.AuthorEntity;
-import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.service.BookService;
+import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
+import com.internship.bookstore.service.model.BookWrapper;
 import com.internship.bookstore.transform.request.book.AddAuthorRequest;
 import com.internship.bookstore.transform.request.book.BookCreateRequest;
 import com.internship.bookstore.transform.request.book.BookUpdateRequest;
@@ -12,11 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Book;
 import java.util.List;
 
 /**
  * @author Gurgen Poghosyan
  */
+
 @RestController
 @RequestMapping("/api/v1/books")
 public class BookController {
@@ -29,8 +31,8 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> createBook(@RequestBody BookCreateRequest request) {
-        BookDto dto = bookService.create(request);
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+        BookDto dto = bookService.create(bookDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -41,14 +43,14 @@ public class BookController {
     }
 
     @GetMapping
-    public List<BookEntity> getBooks(@RequestParam(value = "name", required = false) String name) {
+    public List<BookWrapper> getBooks(@RequestParam(value = "name", required = false) String name) {
         return bookService.getBookData(name);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
-                                              @RequestBody BookUpdateRequest updateRequest) {
-        BookDto dto = bookService.update(updateRequest, id);
+                                              @RequestBody BookDto bookDto) {
+        BookDto dto = bookService.update(bookDto, id);
         return ResponseEntity.ok(dto);
     }
 
@@ -58,12 +60,13 @@ public class BookController {
     }
 
     @GetMapping("/{id}/authors")
-    public List<String> getBookAuthors(@PathVariable Long id) {
+    public List<AuthorDto> getBookAuthors(@PathVariable Long id) {
         return bookService.getBookAuthors(id);
     }
 
-    @PutMapping()
+    @PostMapping("/{id}/genres")
     public ResponseEntity<BookDto> addGenreToBook(@RequestBody AddAuthorRequest request) {
-        return bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
+        BookDto dto = bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
+        return ResponseEntity.ok(dto);
     }
 }

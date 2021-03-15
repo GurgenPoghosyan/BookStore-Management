@@ -9,15 +9,17 @@ import com.internship.bookstore.persistence.entity.GenreEntity;
 import com.internship.bookstore.persistence.repository.AuthorRepository;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.GenreRepository;
+import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
+import com.internship.bookstore.service.dto.GenreDto;
+import com.internship.bookstore.service.model.BookWrapper;
 import com.internship.bookstore.transform.request.book.BookCreateRequest;
 import com.internship.bookstore.transform.request.book.BookUpdateRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequest,BookDto,Long> {
+public class BookService implements CRUDService<BookDto,BookDto,BookDto,Long> {
 
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
@@ -41,15 +43,13 @@ public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequ
     }
 
     @Override
-    public BookDto create(BookCreateRequest createRequest) {
-        BookEntity bookEntity = new BookEntity();
-        BeanUtils.copyProperties(createRequest, bookEntity);
-        GenreEntity genreEntity = genreRepository.findByGenreName(createRequest.getGenreName()).
-                orElseThrow(() -> new GenreNotFoundException(createRequest.getGenreName()));
-        AuthorEntity authorEntity = authorRepository.findById(createRequest.getAuthorId()).
-                orElseThrow(() -> new AuthorNotFoundException(createRequest.getAuthorId()));
-        bookEntity.getGenres().add(genreEntity);
-        bookEntity.getAuthors().add(authorEntity);
+    public BookDto create(BookDto bookDto) {
+        BookEntity bookEntity = BookEntity.mapDtoToEntity(bookDto);
+
+        List<GenreDto> listOfGenres = bookDto.getGenres();
+        bookEntity.setGenres(listOfGenres.stream().map(GenreEntity::mapDtoToEntity).collect(Collectors.toList()));
+        List<AuthorDto> listOfAuthors = bookDto.getAuthors();
+        bookEntity.setAuthors(listOfAuthors.stream().map(AuthorEntity::mapDtoToEntity).collect(Collectors.toList()));
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(savedBookEntity);
     }
@@ -60,11 +60,11 @@ public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequ
         return BookDto.mapEntityToDto(bookEntity);
     }
 
-    public List<BookEntity> getBookData(String name) {
+    public List<BookWrapper> getBookData(String name) {
         if (name != null) {
-            return bookRepository.findAll().stream().filter(book -> book.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+            return bookRepository.findAllBooks().stream().filter(book -> book.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
         }
-        return bookRepository.findAll();
+        return bookRepository.findAllBooks();
     }
 
     @Override
@@ -74,27 +74,26 @@ public class BookService implements CRUDService<BookCreateRequest,BookUpdateRequ
     }
 
     @Override
-    public BookDto update(BookUpdateRequest updateRequest, Long id) {
+    public BookDto update(BookDto bookDto, Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        BeanUtils.copyProperties(updateRequest, bookEntity);
+        bookEntity.setName(bookDto.getName());
+        bookEntity.setDate(bookDto.getDate());
         BookEntity updatedBookEntity = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(updatedBookEntity);
     }
 
-    public List<String> getBookAuthors(Long id) {
+    public List<AuthorDto> getBookAuthors(Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         BookDto dto = BookDto.mapEntityToDto(bookEntity);
         return dto.getAuthors();
     }
 
-    public ResponseEntity<BookDto> addAuthorToBook(Long bookId, Long authorId) {
+    public BookDto addAuthorToBook(Long bookId, Long authorId) {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
         AuthorEntity authorEntity = authorRepository.findById(authorId).
                 orElseThrow(() -> new AuthorNotFoundException(authorId));
         bookEntity.getAuthors().add(authorEntity);
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
-        BookDto bookDto = new BookDto();
-        BeanUtils.copyProperties(savedBookEntity,bookDto);
-        return ResponseEntity.ok(bookDto);
+        return BookDto.mapEntityToDto(savedBookEntity);
     }
 }
