@@ -5,14 +5,11 @@ import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.model.BookWrapper;
 import com.internship.bookstore.transform.request.book.AddAuthorRequest;
-import com.internship.bookstore.transform.request.book.BookCreateRequest;
-import com.internship.bookstore.transform.request.book.BookUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Book;
 import java.util.List;
 
 /**
@@ -23,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/books")
 public class BookController {
 
-    private BookService bookService;
+    private final BookService bookService;
 
     @Autowired
     public BookController(BookService bookService) {
@@ -64,9 +61,9 @@ public class BookController {
         return bookService.getBookAuthors(id);
     }
 
-    @PostMapping("/{id}/genres")
-    public ResponseEntity<BookDto> addGenreToBook(@RequestBody AddAuthorRequest request) {
-        BookDto dto = bookService.addAuthorToBook(request.getBookId(), request.getAuthorId());
+    @PostMapping("/{id}")
+    public ResponseEntity<BookDto> addAuthorToBook(@PathVariable Long id,@RequestBody AddAuthorRequest request) {
+        BookDto dto = bookService.addAuthorToBook(id, request.getAuthorId());
         return ResponseEntity.ok(dto);
     }
 }

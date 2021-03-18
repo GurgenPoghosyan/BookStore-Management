@@ -15,4 +15,6 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
     @Query("SELECT new com.internship.bookstore.service.model.BookWrapper(u) FROM BookEntity u")
     List<BookWrapper> findAllBooks();
+
+    BookEntity findByName(String name);
 }

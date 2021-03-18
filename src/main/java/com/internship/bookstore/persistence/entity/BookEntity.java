@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,13 +32,25 @@ public class BookEntity {
     @Column(name = "date_of_publication")
     private String date;
 
+    @Column(name = "rating")
+    private Double rating;
+
+    @Column(name = "language")
+    private String language;
+
+    @Column(name = "num_pages")
+    private Integer pages;
+
+    @ManyToOne
+    private PublisherEntity publisher;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "books_genres",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private List<GenreEntity> genres;
+    private List<GenreEntity> genres = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -45,17 +58,5 @@ public class BookEntity {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
-    private List<AuthorEntity> authors;
-
-    public static BookEntity mapDtoToEntity(BookDto bookDto) {
-        if (bookDto == null) {
-            return null;
-        }
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setName(bookDto.getName());
-        List<AuthorDto> listOfAuthors = bookDto.getAuthors();
-        bookEntity.setAuthors(listOfAuthors.stream().map(AuthorEntity::mapDtoToEntity).collect(Collectors.toList()));
-        return bookEntity;
-    }
-
+    private List<AuthorEntity> authors = new ArrayList<>();
 }

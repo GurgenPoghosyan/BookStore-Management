@@ -3,7 +3,11 @@ package com.internship.bookstore.service.dto;
 import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.persistence.entity.GenreEntity;
+import com.internship.bookstore.persistence.entity.PublisherEntity;
+import com.internship.bookstore.persistence.repository.AuthorRepository;
+import com.internship.bookstore.persistence.repository.GenreRepository;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -21,26 +25,17 @@ public class BookDto {
 
     private String date;
 
-    private List<GenreDto> genres;
+    private Double rating;
 
-    private List<AuthorDto> authors;
+    private String language;
 
-    public static BookDto mapEntityToDto(BookEntity entity){
-        if (entity==null) {
-            return null;
-        }
-        BookDto dto= new BookDto();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setDate(entity.getDate());
-        List<AuthorEntity> listOfAuthors = entity.getAuthors();
-        if(!CollectionUtils.isEmpty(listOfAuthors)){
-            dto.setAuthors(listOfAuthors.stream().map(AuthorDto::mapEntityToDto).collect(Collectors.toList()));
-        }
-        List<GenreEntity> listOfGenres = entity.getGenres();
-        if(!CollectionUtils.isEmpty(listOfGenres)){
-            dto.setGenres(listOfGenres.stream().map(GenreDto::mapEntityToDto).collect(Collectors.toList()));
-        }
-        return dto;
-    }
+    private Integer pages;
+
+    private Long publisherId;
+
+    private List<Long> genres;
+
+    private List<Long> authors;
+
+
 }

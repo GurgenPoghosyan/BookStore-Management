@@ -10,5 +10,5 @@ import java.util.Optional;
  */
 public interface GenreRepository extends JpaRepository<GenreEntity, Long> {
 
-    Optional<GenreEntity> findByGenreName(String name);
+    GenreEntity findByGenreName(String name);
 }

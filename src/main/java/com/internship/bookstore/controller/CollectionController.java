@@ -25,6 +25,7 @@ public class CollectionController {
     public CollectionController(CollectionService collectionService) {
         this.collectionService = collectionService;
     }
+
     @PostMapping
     public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionCreateRequest request) {
         CollectionDto dto = collectionService.create(request);
@@ -44,7 +45,7 @@ public class CollectionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id,
-                                           @RequestBody CollectionUpdateRequset updateRequest) {
+                                                          @RequestBody CollectionUpdateRequset updateRequest) {
         CollectionDto dto = collectionService.update(updateRequest, id);
         return ResponseEntity.ok(dto);
     }
@@ -55,7 +56,7 @@ public class CollectionController {
     }
 
     @PutMapping()
-    public ResponseEntity<CollectionDto> addBookToCollections(@RequestBody AddBookToCollectionRequest request){
+    public ResponseEntity<CollectionDto> addBookToCollections(@RequestBody AddBookToCollectionRequest request) {
         CollectionDto dto = collectionService.addBookToCollection(request.getBookId(), request.getCollectionId());
         return ResponseEntity.ok(dto);
     }

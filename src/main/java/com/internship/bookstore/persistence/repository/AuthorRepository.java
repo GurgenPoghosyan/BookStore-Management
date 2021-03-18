@@ -15,4 +15,6 @@ public interface AuthorRepository extends JpaRepository<AuthorEntity, Long> {
 
     @Query("SELECT new com.internship.bookstore.service.model.AuthorWrapper(u) FROM AuthorEntity u")
     List<AuthorWrapper> findAllAuthors();
+
+    AuthorEntity findByName(String name);
 }

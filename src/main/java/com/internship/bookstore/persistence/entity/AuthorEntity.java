@@ -33,13 +33,4 @@ public class AuthorEntity {
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private List<BookEntity> books;
-
-    public static AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
-        if (authorDto == null) {
-            return null;
-        }
-        AuthorEntity authorEntity = new AuthorEntity();
-        authorEntity.setName(authorDto.getName());
-        return authorEntity;
-    }
 }

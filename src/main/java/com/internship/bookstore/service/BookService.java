@@ -2,24 +2,22 @@ package com.internship.bookstore.service;
 
 import com.internship.bookstore.common.exceptions.AuthorNotFoundException;
 import com.internship.bookstore.common.exceptions.BookNotFoundException;
-import com.internship.bookstore.common.exceptions.GenreNotFoundException;
+import com.internship.bookstore.common.exceptions.PublisherNotFoundException;
 import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.persistence.entity.GenreEntity;
 import com.internship.bookstore.persistence.repository.AuthorRepository;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.GenreRepository;
+import com.internship.bookstore.persistence.repository.PublisherRepository;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
-import com.internship.bookstore.service.dto.GenreDto;
+import com.internship.bookstore.service.dto.PublisherDto;
 import com.internship.bookstore.service.model.BookWrapper;
-import com.internship.bookstore.transform.request.book.BookCreateRequest;
-import com.internship.bookstore.transform.request.book.BookUpdateRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.awt.print.Book;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,37 +25,41 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class BookService implements CRUDService<BookDto,BookDto,BookDto,Long> {
+public class BookService implements CRUDService<BookDto, BookDto, BookDto, Long> {
 
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final AuthorRepository authorRepository;
+    private final PublisherRepository publisherRepository;
+    private final AuthorService authorService;
+    private final GenreService genreService;
 
     @Autowired
     public BookService(BookRepository bookRepository,
                        GenreRepository genreRepository,
-                       AuthorRepository authorRepository) {
+                       AuthorRepository authorRepository,
+                       PublisherRepository publisherRepository,
+                       AuthorService authorService,
+                       GenreService genreService) {
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
+        this.publisherRepository = publisherRepository;
+        this.authorService = authorService;
+        this.genreService = genreService;
     }
 
     @Override
     public BookDto create(BookDto bookDto) {
-        BookEntity bookEntity = BookEntity.mapDtoToEntity(bookDto);
-
-        List<GenreDto> listOfGenres = bookDto.getGenres();
-        bookEntity.setGenres(listOfGenres.stream().map(GenreEntity::mapDtoToEntity).collect(Collectors.toList()));
-        List<AuthorDto> listOfAuthors = bookDto.getAuthors();
-        bookEntity.setAuthors(listOfAuthors.stream().map(AuthorEntity::mapDtoToEntity).collect(Collectors.toList()));
+        BookEntity bookEntity = mapDtoToEntity(bookDto);
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
-        return BookDto.mapEntityToDto(savedBookEntity);
+        return mapEntityToDto(savedBookEntity);
     }
 
     @Override
     public BookDto get(Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        return BookDto.mapEntityToDto(bookEntity);
+        return mapEntityToDto(bookEntity);
     }
 
     public List<BookWrapper> getBookData(String name) {
@@ -79,13 +81,14 @@ public class BookService implements CRUDService<BookDto,BookDto,BookDto,Long> {
         bookEntity.setName(bookDto.getName());
         bookEntity.setDate(bookDto.getDate());
         BookEntity updatedBookEntity = bookRepository.save(bookEntity);
-        return BookDto.mapEntityToDto(updatedBookEntity);
+        return mapEntityToDto(updatedBookEntity);
     }
 
     public List<AuthorDto> getBookAuthors(Long id) {
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        BookDto dto = BookDto.mapEntityToDto(bookEntity);
-        return dto.getAuthors();
+        BookDto dto = mapEntityToDto(bookEntity);
+        List<Long> authors = dto.getAuthors();
+        return authorService.mapLongListToEntityList(authors).stream().map(AuthorService::mapEntityToDto).collect(Collectors.toList());
     }
 
     public BookDto addAuthorToBook(Long bookId, Long authorId) {
@@ -94,6 +97,48 @@ public class BookService implements CRUDService<BookDto,BookDto,BookDto,Long> {
                 orElseThrow(() -> new AuthorNotFoundException(authorId));
         bookEntity.getAuthors().add(authorEntity);
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
-        return BookDto.mapEntityToDto(savedBookEntity);
+        return mapEntityToDto(savedBookEntity);
+    }
+
+    public BookEntity mapDtoToEntity(BookDto bookDto) {
+        if (bookDto == null) {
+            return null;
+        }
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setName(bookDto.getName());
+        bookEntity.setLanguage(bookDto.getLanguage());
+        bookEntity.setPages(bookDto.getPages());
+        bookEntity.setDate(bookDto.getDate());
+        bookEntity.setRating(bookDto.getRating());
+        bookEntity.setPublisher(publisherRepository.findById(bookDto.getPublisherId()).
+                orElseThrow(()->new PublisherNotFoundException(bookDto.getPublisherId())));
+        List<Long> listOfAuthors = bookDto.getAuthors();
+        bookEntity.setAuthors(authorService.mapLongListToEntityList(listOfAuthors));
+        List<Long> listOfGenres = bookDto.getGenres();
+        bookEntity.setGenres(genreService.mapLongListToEntityList(listOfGenres));
+        return bookEntity;
+    }
+    public static BookDto mapEntityToDto(BookEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        BookDto dto = new BookDto();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setDate(entity.getDate());
+        dto.setPages(entity.getPages());
+        dto.setLanguage(entity.getLanguage());
+        dto.setRating(entity.getRating());
+        dto.setPublisherId(entity.getPublisher().getId());
+        List<AuthorEntity> listOfAuthors = entity.getAuthors();
+        if (!CollectionUtils.isEmpty(listOfAuthors)) {
+            dto.setAuthors(listOfAuthors.stream().map(AuthorEntity::getId).collect(Collectors.toList()));
+        }
+        List<GenreEntity> listOfGenres = entity.getGenres();
+        if (!CollectionUtils.isEmpty(listOfGenres)) {
+            dto.setGenres(listOfGenres.stream().map(GenreEntity::getId).collect(Collectors.toList()));
+        }
+
+        return dto;
     }
 }

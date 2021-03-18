@@ -8,6 +8,7 @@ import com.internship.bookstore.service.model.AuthorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class AuthorService implements CRUDService<AuthorDto, AuthorDto,AuthorDto,Long> {
+public class AuthorService implements CRUDService<AuthorDto, AuthorDto, AuthorDto, Long> {
 
     private final AuthorRepository authorRepository;
 
@@ -27,23 +28,23 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto,AuthorDto
 
     @Override
     public AuthorDto create(AuthorDto authorDto) {
-        AuthorEntity authorEntity = AuthorEntity.mapDtoToEntity(authorDto);
+        AuthorEntity authorEntity = mapDtoToEntity(authorDto);
         AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
-        AuthorDto.mapEntityToDto(savedAuthorEntity);
+        mapEntityToDto(savedAuthorEntity);
         return authorDto;
     }
 
     @Override
     public AuthorDto get(Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        return AuthorDto.mapEntityToDto(authorEntity);
+        return mapEntityToDto(authorEntity);
     }
 
     public List<AuthorWrapper> getAuthorData(String name) {
         if (name != null) {
             return authorRepository.findAllAuthors().stream().filter(author -> author.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
         }
-       return authorRepository.findAllAuthors();
+        return authorRepository.findAllAuthors();
     }
 
     @Override
@@ -51,7 +52,7 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto,AuthorDto
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
         authorEntity.setName(authorDto.getName());
         AuthorEntity updatedAuthorEntity = authorRepository.save(authorEntity);
-        return AuthorDto.mapEntityToDto(updatedAuthorEntity);
+        return mapEntityToDto(updatedAuthorEntity);
     }
 
     @Override
@@ -60,9 +61,31 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto,AuthorDto
         authorRepository.delete(authorEntity);
     }
 
-//    public List<String> getAuthorBooks(Long id) {
-//        AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-//        AuthorDto dto = AuthorDto.mapEntityToDto(authorEntity);
-//        return dto.getBooks();
-//    }
+    public static AuthorDto mapEntityToDto(AuthorEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        AuthorDto dto = new AuthorDto();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        return dto;
+    }
+
+    public static AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
+        if (authorDto == null) {
+            return null;
+        }
+        AuthorEntity authorEntity = new AuthorEntity();
+        authorEntity.setName(authorDto.getName());
+        return authorEntity;
+    }
+
+    public List<AuthorEntity> mapLongListToEntityList(List<Long> authors){
+        List<AuthorEntity> list = new ArrayList<>();
+        for (Long longId : authors) {
+            AuthorEntity byId = authorRepository.findById(longId).orElseThrow(()->new AuthorNotFoundException(longId));
+            list.add(byId);
+        }
+        return list;
+    }
 }

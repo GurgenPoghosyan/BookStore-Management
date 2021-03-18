@@ -31,5 +31,4 @@ public class CollectionEntity {
             joinColumns = @JoinColumn(name = "collection_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id"))
     private List<BookEntity> books;
-
 }

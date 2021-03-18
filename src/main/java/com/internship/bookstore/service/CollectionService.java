@@ -70,7 +70,7 @@ public class CollectionService implements CRUDService<CollectionCreateRequest,
     }
 
     public CollectionDto addBookToCollection(Long bookId, Long collectionId) {
-        BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(()->new BookNotFoundException(bookId));
+        BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
         CollectionEntity collectionEntity = collectionRepository.findById(collectionId).orElseThrow(() -> new CollectionNotFoundException(collectionId));
         collectionEntity.getBooks().add(bookEntity);
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);

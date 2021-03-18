@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * @author Gurgen Poghosyan
  */
-public interface CollectionRepository extends JpaRepository<CollectionEntity,Long> {
+public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {
     CollectionEntity findByName(String name);
 }

@@ -42,7 +42,7 @@ public class AuthorController {
     }
 
 //    @GetMapping("/{id}/books")
-//    public List<String> getAuthorBooks(@PathVariable Long id) {
+//    public List<BookDto> getAuthorBooks(@PathVariable Long id) {
 //        return authorService.getAuthorBooks(id);
 //    }
 
