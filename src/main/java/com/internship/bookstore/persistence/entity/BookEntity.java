@@ -1,7 +1,5 @@
 package com.internship.bookstore.persistence.entity;
 
-import com.internship.bookstore.service.dto.AuthorDto;
-import com.internship.bookstore.service.dto.BookDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +7,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Gurgen Poghosyan

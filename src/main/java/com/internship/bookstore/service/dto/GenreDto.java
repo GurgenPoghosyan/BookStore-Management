@@ -1,6 +1,5 @@
 package com.internship.bookstore.service.dto;
 
-import com.internship.bookstore.persistence.entity.GenreEntity;
 import lombok.Data;
 
 /**

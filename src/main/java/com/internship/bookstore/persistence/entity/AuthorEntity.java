@@ -1,6 +1,5 @@
 package com.internship.bookstore.persistence.entity;
 
-import com.internship.bookstore.service.dto.AuthorDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

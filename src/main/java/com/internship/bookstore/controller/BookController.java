@@ -1,10 +1,12 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.BookService;
+import com.internship.bookstore.service.criteria.SearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.model.BookWrapper;
-import com.internship.bookstore.transform.request.book.AddAuthorRequest;
+import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.transform.requestbody.book.AddAuthorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +36,19 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
+    public ResponseEntity<BookDto> getBooks(@PathVariable Long id) {
         BookDto dto = bookService.get(id);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping
     public List<BookWrapper> getBooks(@RequestParam(value = "name", required = false) String name) {
-        return bookService.getBookData(name);
+        return bookService.getBooks(name);
+    }
+
+    @GetMapping("/with-pagination")
+    public QueryResponseWrapper<BookWrapper> getBooks(SearchCriteria criteria) {
+        return bookService.getBooks(criteria);
     }
 
     @PutMapping("/{id}")
@@ -62,7 +69,7 @@ public class BookController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<BookDto> addAuthorToBook(@PathVariable Long id,@RequestBody AddAuthorRequest request) {
+    public ResponseEntity<BookDto> addAuthorToBook(@PathVariable Long id, @RequestBody AddAuthorRequest request) {
         BookDto dto = bookService.addAuthorToBook(id, request.getAuthorId());
         return ResponseEntity.ok(dto);
     }

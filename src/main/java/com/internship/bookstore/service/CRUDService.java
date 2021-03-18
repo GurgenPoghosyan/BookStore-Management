@@ -3,13 +3,13 @@ package com.internship.bookstore.service;
 /**
  * @author Gurgen Poghosyan
  */
-public interface CRUDService<CREQUEST,UREQUEST, RESPONSE, ID> {
+public interface CRUDService<BODY, ID> {
 
-    RESPONSE create(CREQUEST request);
+    BODY create(BODY requestBody);
 
-    RESPONSE get(ID id);
+    BODY get(ID id);
 
-    RESPONSE update(UREQUEST request, ID id);
+    BODY update(BODY requestBody, ID id);
 
     void delete(ID id);
 }

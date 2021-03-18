@@ -33,14 +33,20 @@ public class CSVReaderService {
     private final PublisherRepository publisherRepository;
     private final GenreRepository genreRepository;
     private final AuthorService authorService;
+    private final BookService bookService;
 
     @Autowired
-    public CSVReaderService(AuthorRepository authorRepository, BookRepository bookRepository, PublisherRepository publisherRepository, GenreRepository genreRepository, AuthorService authorService) {
+    public CSVReaderService(AuthorRepository authorRepository,
+                            BookRepository bookRepository,
+                            PublisherRepository publisherRepository,
+                            GenreRepository genreRepository,
+                            AuthorService authorService, BookService bookService) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
         this.genreRepository = genreRepository;
         this.authorService = authorService;
+        this.bookService = bookService;
     }
 
     public List<BookDto> csvBooksProcessor() {
@@ -64,7 +70,7 @@ public class CSVReaderService {
                         bookEntity.getAuthors().add(byName);
                         continue;
                     }
-                    AuthorEntity authorEntity = AuthorService.mapDtoToEntity(authorDto);
+                    AuthorEntity authorEntity = authorService.mapDtoToEntity(authorDto);
                     AuthorEntity savedAuthor = authorRepository.save(authorEntity);
                     bookEntity.getAuthors().add(savedAuthor);
                 }
@@ -83,7 +89,7 @@ public class CSVReaderService {
                 bookEntity.setRating(Double.parseDouble(dataPoints[3]));
                 bookEntity.setLanguage(dataPoints[6]);
                 BookEntity savedBook = bookRepository.save(bookEntity);
-                books.add(BookService.mapEntityToDto(savedBook));
+                books.add(bookService.mapEntityToDto(savedBook));
             }
 
         } catch (IOException e) {

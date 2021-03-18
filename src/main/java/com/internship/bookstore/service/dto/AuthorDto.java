@@ -1,12 +1,15 @@
 package com.internship.bookstore.service.dto;
 
-import com.internship.bookstore.persistence.entity.AuthorEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Gurgen Poghosyan
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthorDto {
 
     private Long id;

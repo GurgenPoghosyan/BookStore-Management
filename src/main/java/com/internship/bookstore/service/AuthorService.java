@@ -3,9 +3,11 @@ package com.internship.bookstore.service;
 import com.internship.bookstore.common.exceptions.AuthorNotFoundException;
 import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.repository.AuthorRepository;
+import com.internship.bookstore.service.criteria.SearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
-import com.internship.bookstore.service.model.AuthorWrapper;
+import com.internship.bookstore.service.model.QueryResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,13 +19,23 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class AuthorService implements CRUDService<AuthorDto, AuthorDto, AuthorDto, Long> {
+public class AuthorService implements CRUDService<AuthorDto, Long> {
 
     private final AuthorRepository authorRepository;
 
     @Autowired
     public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
+    }
+
+    public static AuthorDto mapEntityToDto(AuthorEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        AuthorDto dto = new AuthorDto();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        return dto;
     }
 
     @Override
@@ -40,11 +52,17 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto, AuthorDt
         return mapEntityToDto(authorEntity);
     }
 
-    public List<AuthorWrapper> getAuthorData(String name) {
+    public List<AuthorDto> getAuthors(String name) {
         if (name != null) {
-            return authorRepository.findAllAuthors().stream().filter(author -> author.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+            return authorRepository.findAll().stream().filter(author -> author.getName().equalsIgnoreCase(name)).collect(Collectors.toList())
+                    .stream().map(AuthorService::mapEntityToDto).collect(Collectors.toList());
         }
-        return authorRepository.findAllAuthors();
+        return authorRepository.findAll().stream().map(AuthorService::mapEntityToDto).collect(Collectors.toList());
+    }
+
+    public QueryResponseWrapper<AuthorDto> getAuthors(SearchCriteria criteria) {
+        Page<AuthorDto> content = authorRepository.findAllWithPagination(criteria.composePageRequest());
+        return new QueryResponseWrapper<>(content.getTotalElements(), content.getContent());
     }
 
     @Override
@@ -61,17 +79,7 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto, AuthorDt
         authorRepository.delete(authorEntity);
     }
 
-    public static AuthorDto mapEntityToDto(AuthorEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        AuthorDto dto = new AuthorDto();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
-    }
-
-    public static AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
+    public AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
         if (authorDto == null) {
             return null;
         }
@@ -80,11 +88,11 @@ public class AuthorService implements CRUDService<AuthorDto, AuthorDto, AuthorDt
         return authorEntity;
     }
 
-    public List<AuthorEntity> mapLongListToEntityList(List<Long> authors){
+    public List<AuthorEntity> mapLongListToEntityList(List<Long> listOfAuthors) {
         List<AuthorEntity> list = new ArrayList<>();
-        for (Long longId : authors) {
-            AuthorEntity byId = authorRepository.findById(longId).orElseThrow(()->new AuthorNotFoundException(longId));
-            list.add(byId);
+        for (Long author : listOfAuthors) {
+            AuthorEntity authorEntity = authorRepository.findById(author).orElseThrow(() -> new AuthorNotFoundException(author));
+            list.add(authorEntity);
         }
         return list;
     }

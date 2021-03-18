@@ -1,4 +1,4 @@
-package com.internship.bookstore.transform.request.book;
+package com.internship.bookstore.transform.requestbody.book;
 
 import lombok.Data;
 
@@ -9,9 +9,6 @@ import javax.validation.constraints.NotEmpty;
  */
 @Data
 public class AddAuthorRequest {
-    @NotEmpty
-    private Long bookId;
-
     @NotEmpty
     private Long authorId;
 }

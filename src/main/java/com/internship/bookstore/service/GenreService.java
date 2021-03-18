@@ -23,6 +23,7 @@ public class GenreService {
         this.genreRepository = genreRepository;
     }
 
+
     public static GenreDto mapEntityToDto(GenreEntity genreEntity) {
         if (genreEntity == null) {
             return null;

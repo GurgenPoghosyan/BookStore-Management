@@ -1,4 +1,4 @@
-package com.internship.bookstore.transform.request.collection;
+package com.internship.bookstore.transform.requestbody.collection;
 
 import lombok.Data;
 

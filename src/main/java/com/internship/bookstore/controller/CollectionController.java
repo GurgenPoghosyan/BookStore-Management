@@ -1,10 +1,10 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.CollectionService;
+import com.internship.bookstore.service.criteria.SearchCriteria;
 import com.internship.bookstore.service.dto.CollectionDto;
-import com.internship.bookstore.transform.request.collection.AddBookToCollectionRequest;
-import com.internship.bookstore.transform.request.collection.CollectionCreateRequest;
-import com.internship.bookstore.transform.request.collection.CollectionUpdateRequset;
+import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.transform.requestbody.collection.AddBookToCollectionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,26 +27,31 @@ public class CollectionController {
     }
 
     @PostMapping
-    public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionCreateRequest request) {
-        CollectionDto dto = collectionService.create(request);
+    public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionDto collectionDto) {
+        CollectionDto dto = collectionService.create(collectionDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CollectionDto> getCollection(@PathVariable Long id) {
+    public ResponseEntity<CollectionDto> getCollections(@PathVariable Long id) {
         CollectionDto dto = collectionService.get(id);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping
     public List<CollectionDto> getCollections(@RequestParam(value = "name", required = false) String name) {
-        return collectionService.getCollectionData(name);
+        return collectionService.getCollections(name);
+    }
+
+    @GetMapping("/with-pagination")
+    public QueryResponseWrapper<CollectionDto> getCollections(SearchCriteria criteria) {
+        return collectionService.getCollections(criteria);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CollectionDto> updateCollection(@PathVariable Long id,
-                                                          @RequestBody CollectionUpdateRequset updateRequest) {
-        CollectionDto dto = collectionService.update(updateRequest, id);
+                                                          @RequestBody CollectionDto collectionDto) {
+        CollectionDto dto = collectionService.update(collectionDto, id);
         return ResponseEntity.ok(dto);
     }
 
@@ -55,9 +60,9 @@ public class CollectionController {
         collectionService.delete(id);
     }
 
-    @PutMapping()
-    public ResponseEntity<CollectionDto> addBookToCollections(@RequestBody AddBookToCollectionRequest request) {
-        CollectionDto dto = collectionService.addBookToCollection(request.getBookId(), request.getCollectionId());
+    @PostMapping("/{id}")
+    public ResponseEntity<CollectionDto> addBookToCollections(@PathVariable Long id, @RequestBody AddBookToCollectionRequest request) {
+        CollectionDto dto = collectionService.addBookToCollection(id, request.getCollectionId());
         return ResponseEntity.ok(dto);
     }
 
