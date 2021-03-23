@@ -16,7 +16,7 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @RestController
-@RequestMapping("/api/v1/collections")
+@RequestMapping("/collections")
 public class CollectionController {
 
     private final CollectionService collectionService;
@@ -33,7 +33,7 @@ public class CollectionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CollectionDto> getCollections(@PathVariable Long id) {
+    public ResponseEntity<CollectionDto> getCollection(@PathVariable Long id) {
         CollectionDto dto = collectionService.get(id);
         return ResponseEntity.ok(dto);
     }

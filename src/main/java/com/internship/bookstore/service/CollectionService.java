@@ -12,7 +12,6 @@ import com.internship.bookstore.service.model.QueryResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class CollectionService implements CRUDService<CollectionDto, Long> {
+public class CollectionService implements CRUDService<CollectionDto> {
 
     private final CollectionRepository collectionRepository;
     private final BookRepository bookRepository;
@@ -36,50 +35,28 @@ public class CollectionService implements CRUDService<CollectionDto, Long> {
         this.bookService = bookService;
     }
 
-    public static CollectionDto mapEntityToDto(CollectionEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        CollectionDto dto = new CollectionDto();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        List<BookEntity> books = entity.getBooks();
-        if (!CollectionUtils.isEmpty(books)) {
-            dto.setBooks(entity.getBooks().stream().map(BookEntity::getId).collect(Collectors.toList()));
-        }
-        return dto;
-    }
-
-    public CollectionEntity mapDtoToEntity(CollectionDto dto) {
-        if (dto == null) {
-            return null;
-        }
-        CollectionEntity collectionEntity = new CollectionEntity();
-        collectionEntity.setName(dto.getName());
-        collectionEntity.setBooks(bookService.mapLongListToEntityList(dto.getBooks()));
-        return collectionEntity;
-    }
 
     @Override
     public CollectionDto create(CollectionDto collectionDto) {
-        CollectionEntity collectionEntity = mapDtoToEntity(collectionDto);
+        CollectionEntity collectionEntity = CollectionDto.mapDtoToEntity(collectionDto);
+        collectionEntity.setBooks(bookService.mapLongListToEntityList(collectionDto.getBooks()));
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);
-        return mapEntityToDto(savedCollectionEntity);
+        return CollectionDto.mapEntityToDto(savedCollectionEntity);
     }
 
     @Override
     public CollectionDto get(Long id) {
         CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
-        return mapEntityToDto(collectionEntity);
+        return CollectionDto.mapEntityToDto(collectionEntity);
     }
 
     public List<CollectionDto> getCollections(String name) {
         if (name != null) {
             List<CollectionEntity> collect = collectionRepository.findAll().stream().filter(book -> book.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
-            return collect.stream().map(CollectionService::mapEntityToDto).collect(Collectors.toList());
+            return collect.stream().map(CollectionDto::mapEntityToDto).collect(Collectors.toList());
         }
         List<CollectionEntity> all = collectionRepository.findAll();
-        return all.stream().map(CollectionService::mapEntityToDto).collect(Collectors.toList());
+        return all.stream().map(CollectionDto::mapEntityToDto).collect(Collectors.toList());
     }
 
     public QueryResponseWrapper<CollectionDto> getCollections(SearchCriteria criteria) {
@@ -90,10 +67,11 @@ public class CollectionService implements CRUDService<CollectionDto, Long> {
     @Override
     public CollectionDto update(CollectionDto collectionDto, Long id) {
         CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
-        CollectionEntity mapped = mapDtoToEntity(collectionDto);
+        CollectionEntity mapped = CollectionDto.mapDtoToEntity(collectionDto);
+        collectionEntity.setBooks(bookService.mapLongListToEntityList(collectionDto.getBooks()));
         mapped.setId(collectionEntity.getId());
         CollectionEntity updatedCollectionEntity = collectionRepository.save(mapped);
-        return mapEntityToDto(updatedCollectionEntity);
+        return CollectionDto.mapEntityToDto(updatedCollectionEntity);
     }
 
     @Override
@@ -107,7 +85,7 @@ public class CollectionService implements CRUDService<CollectionDto, Long> {
         CollectionEntity collectionEntity = collectionRepository.findById(collectionId).orElseThrow(() -> new CollectionNotFoundException(collectionId));
         collectionEntity.getBooks().add(bookEntity);
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);
-        return mapEntityToDto(savedCollectionEntity);
+        return CollectionDto.mapEntityToDto(savedCollectionEntity);
     }
 
 

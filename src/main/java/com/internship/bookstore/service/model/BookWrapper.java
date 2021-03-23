@@ -19,17 +19,15 @@ public class BookWrapper {
     private Double rating;
     private List<String> genres;
 
-    public BookWrapper(Long id, String name, String language, Double rating) {
+    public BookWrapper(Long id, String name, Double rating) {
         this.id = id;
         this.name = name;
-        this.language = language;
         this.rating = rating;
     }
 
     public BookWrapper(BookEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
-        this.language = entity.getLanguage();
         this.rating = entity.getRating();
         List<GenreEntity> genres = entity.getGenres();
         if (!CollectionUtils.isEmpty(genres)) {

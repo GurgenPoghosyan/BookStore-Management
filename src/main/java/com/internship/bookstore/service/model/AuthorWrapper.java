@@ -12,7 +12,7 @@ public class AuthorWrapper {
     private Long id;
     private String name;
 
-    public AuthorWrapper(AuthorEntity entity){
+    public AuthorWrapper(AuthorEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
     }

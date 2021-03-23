@@ -8,7 +8,8 @@ import javax.validation.constraints.NotEmpty;
  * @author Gurgen Poghosyan
  */
 @Data
-public class AddAuthorRequest {
+public class AddGenreRequestBody {
+
     @NotEmpty
-    private Long authorId;
+    private Long genreId;
 }

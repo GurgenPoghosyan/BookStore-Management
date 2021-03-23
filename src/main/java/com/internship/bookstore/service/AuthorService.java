@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @author Gurgen Poghosyan
  */
 @Service
-public class AuthorService implements CRUDService<AuthorDto, Long> {
+public class AuthorService implements CRUDService<AuthorDto> {
 
     private final AuthorRepository authorRepository;
 
@@ -28,36 +28,26 @@ public class AuthorService implements CRUDService<AuthorDto, Long> {
         this.authorRepository = authorRepository;
     }
 
-    public static AuthorDto mapEntityToDto(AuthorEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        AuthorDto dto = new AuthorDto();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
-    }
 
     @Override
     public AuthorDto create(AuthorDto authorDto) {
-        AuthorEntity authorEntity = mapDtoToEntity(authorDto);
+        AuthorEntity authorEntity = AuthorDto.mapDtoToEntity(authorDto);
         AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
-        mapEntityToDto(savedAuthorEntity);
-        return authorDto;
+        return AuthorDto.mapEntityToDto(savedAuthorEntity);
     }
 
     @Override
     public AuthorDto get(Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        return mapEntityToDto(authorEntity);
+        return AuthorDto.mapEntityToDto(authorEntity);
     }
 
     public List<AuthorDto> getAuthors(String name) {
         if (name != null) {
             return authorRepository.findAll().stream().filter(author -> author.getName().equalsIgnoreCase(name)).collect(Collectors.toList())
-                    .stream().map(AuthorService::mapEntityToDto).collect(Collectors.toList());
+                    .stream().map(AuthorDto::mapEntityToDto).collect(Collectors.toList());
         }
-        return authorRepository.findAll().stream().map(AuthorService::mapEntityToDto).collect(Collectors.toList());
+        return authorRepository.findAll().stream().map(AuthorDto::mapEntityToDto).collect(Collectors.toList());
     }
 
     public QueryResponseWrapper<AuthorDto> getAuthors(SearchCriteria criteria) {
@@ -70,7 +60,7 @@ public class AuthorService implements CRUDService<AuthorDto, Long> {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
         authorEntity.setName(authorDto.getName());
         AuthorEntity updatedAuthorEntity = authorRepository.save(authorEntity);
-        return mapEntityToDto(updatedAuthorEntity);
+        return AuthorDto.mapEntityToDto(updatedAuthorEntity);
     }
 
     @Override
@@ -79,14 +69,6 @@ public class AuthorService implements CRUDService<AuthorDto, Long> {
         authorRepository.delete(authorEntity);
     }
 
-    public AuthorEntity mapDtoToEntity(AuthorDto authorDto) {
-        if (authorDto == null) {
-            return null;
-        }
-        AuthorEntity authorEntity = new AuthorEntity();
-        authorEntity.setName(authorDto.getName());
-        return authorEntity;
-    }
 
     public List<AuthorEntity> mapLongListToEntityList(List<Long> listOfAuthors) {
         List<AuthorEntity> list = new ArrayList<>();

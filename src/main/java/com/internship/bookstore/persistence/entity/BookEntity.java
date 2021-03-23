@@ -32,11 +32,14 @@ public class BookEntity {
     @Column(name = "rating")
     private Double rating;
 
-    @Column(name = "language")
-    private String language;
-
     @Column(name = "num_pages")
     private Integer pages;
+
+    @Column(name = "book_ISBN")
+    private String isbn;
+
+    @Column(name = "book_cover_image_id")
+    private Long imageId;
 
     @ManyToOne
     private PublisherEntity publisher;

@@ -1,16 +1,19 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.BookService;
+import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.criteria.SearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
+import com.internship.bookstore.service.dto.GenreDto;
 import com.internship.bookstore.service.model.BookWrapper;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
-import com.internship.bookstore.transform.requestbody.book.AddAuthorRequest;
+import com.internship.bookstore.transform.requestbody.book.AddAuthorRequestBody;
+import com.internship.bookstore.transform.requestbody.book.AddGenreRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,20 +22,22 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/books")
 public class BookController {
 
     private final BookService bookService;
+    private final CSVReaderService csvReaderService;
 
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, CSVReaderService csvReaderService) {
         this.bookService = bookService;
+        this.csvReaderService = csvReaderService;
     }
 
     @PostMapping
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
         BookDto dto = bookService.create(bookDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")
@@ -41,6 +46,7 @@ public class BookController {
         return ResponseEntity.ok(dto);
     }
 
+    // todo use BookDto instead of BookWrapper for return type
     @GetMapping
     public List<BookWrapper> getBooks(@RequestParam(value = "name", required = false) String name) {
         return bookService.getBooks(name);
@@ -64,13 +70,34 @@ public class BookController {
     }
 
     @GetMapping("/{id}/authors")
-    public List<AuthorDto> getBookAuthors(@PathVariable Long id) {
-        return bookService.getBookAuthors(id);
+    public List<AuthorDto> getBooksAuthors(@PathVariable Long id) {
+        return bookService.getBooksAuthors(id);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<BookDto> addAuthorToBook(@PathVariable Long id, @RequestBody AddAuthorRequest request) {
-        BookDto dto = bookService.addAuthorToBook(id, request.getAuthorId());
+    @GetMapping("/{id}/genres")
+    public List<GenreDto> getBooksGenres(@PathVariable Long id) {
+        return bookService.getBooksGenres(id);
+    }
+
+    @PostMapping("/{id}/authors")
+    public ResponseEntity<BookDto> addAuthorToBook(@PathVariable Long id, @RequestBody AddAuthorRequestBody requestBody) {
+        BookDto dto = bookService.addAuthorToBook(id, requestBody.getAuthorId());
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{id}/genres")
+    public ResponseEntity<BookDto> addGenreToBook(@PathVariable Long id, @RequestBody AddGenreRequestBody requestBody) {
+        BookDto dto = bookService.addGenreToBook(id, requestBody.getGenreId());
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/read-csv")
+    public void readBook(@RequestParam("books") MultipartFile multipartFile) {
+        csvReaderService.csvBooksProcessor(multipartFile);
+    }
+
+    @PostMapping("/read-genre-to-book-csv")
+    public void assignGenreToBook(@RequestParam("genre-to-book") MultipartFile multipartFile) {
+        csvReaderService.csvAssignGenreToBook(multipartFile);
     }
 }

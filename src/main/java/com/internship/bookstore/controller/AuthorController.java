@@ -15,7 +15,7 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @RestController
-@RequestMapping("api/v1/authors")
+@RequestMapping("/authors")
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -28,15 +28,16 @@ public class AuthorController {
     @PostMapping()
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
         AuthorDto dto = authorService.create(authorDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorDto> getAuthors(@PathVariable Long id) {
+    public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id) {
         AuthorDto dto = authorService.get(id);
         return ResponseEntity.ok(dto);
     }
 
+    //todo use single method for getting authors with different search params, instead of separate routes
     @GetMapping
     public List<AuthorDto> getAuthors(@RequestParam(value = "name", required = false) String name) {
         return authorService.getAuthors(name);
@@ -46,10 +47,6 @@ public class AuthorController {
     public QueryResponseWrapper<AuthorDto> getAuthors(SearchCriteria criteria) {
         return authorService.getAuthors(criteria);
     }
-//    @GetMapping("/{id}/books")
-//    public List<BookDto> getAuthorBooks(@PathVariable Long id) {
-//        return authorService.getAuthorBooks(id);
-//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id,
