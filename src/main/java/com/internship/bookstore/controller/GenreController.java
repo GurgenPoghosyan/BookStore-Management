@@ -1,12 +1,12 @@
 package com.internship.bookstore.controller;
 
+import com.internship.bookstore.persistence.entity.GenreEntity;
 import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.GenreService;
-import com.internship.bookstore.service.criteria.SearchCriteria;
+import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +22,7 @@ public class GenreController {
 
     private final GenreService genreService;
     private final CSVReaderService csvReaderService;
+
     @Autowired
     public GenreController(GenreService genreService, CSVReaderService csvReaderService) {
         this.genreService = genreService;
@@ -35,18 +36,13 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GenreDto> getGenres(@PathVariable Long id) {
-        GenreDto dto = genreService.get(id);
+    public ResponseEntity<GenreDto> getGenre(@PathVariable Long id) {
+        GenreDto dto = genreService.getGenre(id);
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping
-    public List<GenreDto> getGenres(@RequestParam(value = "name", required = false) String name) {
-        return genreService.getGenres(name);
-    }
-
-    @GetMapping("/with-pagination")
-    public QueryResponseWrapper<GenreDto> getGenres(SearchCriteria criteria) {
+    @GetMapping()
+    public QueryResponseWrapper<GenreDto> getGenres(@RequestBody GenreSearchCriteria criteria) {
         return genreService.getGenres(criteria);
     }
 
@@ -63,7 +59,7 @@ public class GenreController {
     }
 
     @PostMapping("/read-csv")
-    public List<GenreDto> readGenre(@RequestParam("genres")MultipartFile multipartFile) {
+    public List<GenreDto> readGenre(@RequestParam("genres") MultipartFile multipartFile) {
         return csvReaderService.csvGenreProcessor(multipartFile);
     }
 }

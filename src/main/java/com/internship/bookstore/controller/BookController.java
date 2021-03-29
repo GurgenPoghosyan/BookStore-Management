@@ -2,11 +2,10 @@ package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.BookService;
 import com.internship.bookstore.service.CSVReaderService;
-import com.internship.bookstore.service.criteria.SearchCriteria;
+import com.internship.bookstore.service.criteria.BookSearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.dto.GenreDto;
-import com.internship.bookstore.service.model.BookWrapper;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import com.internship.bookstore.transform.requestbody.book.AddAuthorRequestBody;
 import com.internship.bookstore.transform.requestbody.book.AddGenreRequestBody;
@@ -41,19 +40,13 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBooks(@PathVariable Long id) {
-        BookDto dto = bookService.get(id);
+    public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
+        BookDto dto = bookService.getBook(id);
         return ResponseEntity.ok(dto);
     }
 
-    // todo use BookDto instead of BookWrapper for return type
-    @GetMapping
-    public List<BookWrapper> getBooks(@RequestParam(value = "name", required = false) String name) {
-        return bookService.getBooks(name);
-    }
-
-    @GetMapping("/with-pagination")
-    public QueryResponseWrapper<BookWrapper> getBooks(SearchCriteria criteria) {
+    @GetMapping()
+    public QueryResponseWrapper<BookDto> getBooks(@RequestBody BookSearchCriteria criteria) {
         return bookService.getBooks(criteria);
     }
 

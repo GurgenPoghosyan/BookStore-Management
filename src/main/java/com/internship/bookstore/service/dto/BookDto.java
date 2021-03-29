@@ -25,17 +25,15 @@ public class BookDto {
 
     private Double rating;
 
-    private String language;
-
     private Integer pages;
-
-    private Long publisherId;
 
     private String isbn;
 
-    private List<Long> genres;
+    private PublisherDto publisher;
 
-    private List<Long> authors;
+    private List<GenreDto> genres;
+
+    private List<AuthorDto> authors;
 
     public static BookDto mapEntityToDto(BookEntity entity) {
         if (entity == null) {
@@ -48,14 +46,14 @@ public class BookDto {
         dto.setPages(entity.getPages());
         dto.setRating(entity.getRating());
         dto.setIsbn(entity.getIsbn());
-        dto.setPublisherId(entity.getPublisher().getId());
+        dto.setPublisher(PublisherDto.mapEntityToDto(entity.getPublisher()));
         List<AuthorEntity> listOfAuthors = entity.getAuthors();
         if (!CollectionUtils.isEmpty(listOfAuthors)) {
-            dto.setAuthors(listOfAuthors.stream().map(AuthorEntity::getId).collect(Collectors.toList()));
+            dto.setAuthors(listOfAuthors.stream().map(AuthorDto::mapEntityToDto).collect(Collectors.toList()));
         }
         List<GenreEntity> listOfGenres = entity.getGenres();
         if (!CollectionUtils.isEmpty(listOfGenres)) {
-            dto.setGenres(listOfGenres.stream().map(GenreEntity::getId).collect(Collectors.toList()));
+            dto.setGenres(listOfGenres.stream().map(GenreDto::mapEntityToDto).collect(Collectors.toList()));
         }
 
         return dto;

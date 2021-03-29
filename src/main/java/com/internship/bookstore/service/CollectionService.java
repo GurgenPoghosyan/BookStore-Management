@@ -2,82 +2,84 @@ package com.internship.bookstore.service;
 
 import com.internship.bookstore.common.exceptions.BookNotFoundException;
 import com.internship.bookstore.common.exceptions.CollectionNotFoundException;
+import com.internship.bookstore.common.exceptions.UserNotFoundException;
 import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.persistence.entity.CollectionEntity;
+import com.internship.bookstore.persistence.entity.UserEntity;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.CollectionRepository;
-import com.internship.bookstore.service.criteria.SearchCriteria;
+import com.internship.bookstore.persistence.repository.UserRepository;
+import com.internship.bookstore.service.criteria.CollectionSearchCriteria;
+import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.dto.CollectionDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Gurgen Poghosyan
  */
 @Service
-public class CollectionService implements CRUDService<CollectionDto> {
+@RequiredArgsConstructor
+public class CollectionService {
 
     private final CollectionRepository collectionRepository;
     private final BookRepository bookRepository;
-    private final BookService bookService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public CollectionService(CollectionRepository collectionRepository,
-                             BookRepository bookRepository,
-                             BookService bookService) {
-        this.collectionRepository = collectionRepository;
-        this.bookRepository = bookRepository;
-        this.bookService = bookService;
-    }
-
-
-    @Override
     public CollectionDto create(CollectionDto collectionDto) {
         CollectionEntity collectionEntity = CollectionDto.mapDtoToEntity(collectionDto);
-        collectionEntity.setBooks(bookService.mapLongListToEntityList(collectionDto.getBooks()));
+        List<BookDto> listOfBooks = collectionDto.getBooks();
+        for (BookDto book : listOfBooks) {
+            BookEntity bookEntity = bookRepository.findByName(book.getName());
+            collectionEntity.getBooks().add(bookEntity);
+        }
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);
-        return CollectionDto.mapEntityToDto(savedCollectionEntity);
+        UserEntity userEntity = userRepository.findById(collectionDto.getUserId()).orElseThrow(()->new UserNotFoundException(collectionDto.getUserId()));
+        userEntity.getBookCollections().add(savedCollectionEntity);
+        UserEntity savedUser = userRepository.save(userEntity);
+        collectionEntity.setUser(savedUser);
+        collectionRepository.save(collectionEntity);
+        CollectionDto collectionDto1 = CollectionDto.mapEntityToDto(savedCollectionEntity);
+        collectionDto1.setUserId(savedUser.getId());
+        return collectionDto1;
     }
 
-    @Override
-    public CollectionDto get(Long id) {
+    public CollectionDto getCollection(Long id) {
         CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
         return CollectionDto.mapEntityToDto(collectionEntity);
     }
 
-    public List<CollectionDto> getCollections(String name) {
-        if (name != null) {
-            List<CollectionEntity> collect = collectionRepository.findAll().stream().filter(book -> book.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
-            return collect.stream().map(CollectionDto::mapEntityToDto).collect(Collectors.toList());
-        }
-        List<CollectionEntity> all = collectionRepository.findAll();
-        return all.stream().map(CollectionDto::mapEntityToDto).collect(Collectors.toList());
+    public QueryResponseWrapper<CollectionDto> getCollections(CollectionSearchCriteria criteria) {
+        Page<CollectionEntity> entityContent = collectionRepository.find(criteria.getName(), criteria.composePageRequest());
+        Page<CollectionDto> dtoContent = entityContent.map(CollectionDto::mapEntityToDto);
+        return new QueryResponseWrapper<>(dtoContent.getTotalElements(), dtoContent.getContent());
     }
 
-    public QueryResponseWrapper<CollectionDto> getCollections(SearchCriteria criteria) {
-        Page<CollectionDto> content = collectionRepository.findAllWithPagination(criteria.composePageRequest());
-        return new QueryResponseWrapper<>(content.getTotalElements(), content.getContent());
-    }
-
-    @Override
     public CollectionDto update(CollectionDto collectionDto, Long id) {
         CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
         CollectionEntity mapped = CollectionDto.mapDtoToEntity(collectionDto);
-        collectionEntity.setBooks(bookService.mapLongListToEntityList(collectionDto.getBooks()));
+        List<BookDto> listOfBooks = collectionDto.getBooks();
+        for (BookDto book : listOfBooks) {
+            BookEntity bookEntity = bookRepository.findByName(book.getName());
+            mapped.getBooks().add(bookEntity);
+        }
         mapped.setId(collectionEntity.getId());
+        UserEntity userEntity = userRepository.findById(collectionEntity.getUser().getId()).
+                orElseThrow(()->new UserNotFoundException(collectionEntity.getUser().getId()));
+        mapped.setUser(userEntity);
         CollectionEntity updatedCollectionEntity = collectionRepository.save(mapped);
-        return CollectionDto.mapEntityToDto(updatedCollectionEntity);
+        CollectionDto collectionDto1 = CollectionDto.mapEntityToDto(updatedCollectionEntity);
+        collectionDto1.setUserId(userEntity.getId());
+        return collectionDto1;
     }
 
-    @Override
     public void delete(Long id) {
-        CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
-        collectionRepository.delete(collectionEntity);
+        collectionRepository.deleteById(id);
     }
 
     public CollectionDto addBookToCollection(Long bookId, Long collectionId) {

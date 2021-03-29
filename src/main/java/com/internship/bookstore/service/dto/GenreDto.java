@@ -15,14 +15,14 @@ public class GenreDto {
 
     private Long id;
 
-    private String genreName;
+    private String name;
 
     public static GenreEntity mapDtoToEntity(GenreDto genreDto) {
         if (genreDto == null) {
             return null;
         }
         GenreEntity genreEntity = new GenreEntity();
-        genreEntity.setGenreName(genreDto.getGenreName());
+        genreEntity.setGenreName(genreDto.getName());
         return genreEntity;
     }
 
@@ -32,7 +32,7 @@ public class GenreDto {
         }
         GenreDto dto = new GenreDto();
         dto.setId(genreEntity.getId());
-        dto.setGenreName(genreEntity.getGenreName());
+        dto.setName(genreEntity.getGenreName());
         return dto;
     }
 }

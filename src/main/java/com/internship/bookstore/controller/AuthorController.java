@@ -1,15 +1,13 @@
 package com.internship.bookstore.controller;
 
+import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.service.AuthorService;
-import com.internship.bookstore.service.criteria.SearchCriteria;
+import com.internship.bookstore.service.criteria.AuthorSearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author Gurgen Poghosyan
@@ -33,18 +31,12 @@ public class AuthorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id) {
-        AuthorDto dto = authorService.get(id);
+        AuthorDto dto = authorService.getAuthor(id);
         return ResponseEntity.ok(dto);
     }
 
-    //todo use single method for getting authors with different search params, instead of separate routes
-    @GetMapping
-    public List<AuthorDto> getAuthors(@RequestParam(value = "name", required = false) String name) {
-        return authorService.getAuthors(name);
-    }
-
-    @GetMapping("/with-pagination")
-    public QueryResponseWrapper<AuthorDto> getAuthors(SearchCriteria criteria) {
+    @GetMapping()
+    public QueryResponseWrapper<AuthorDto> getAuthors(@RequestBody AuthorSearchCriteria criteria) {
         return authorService.getAuthors(criteria);
     }
 

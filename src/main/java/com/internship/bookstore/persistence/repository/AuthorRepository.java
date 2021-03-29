@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 /**
  * @author Gurgen Poghosyan
  */
@@ -15,6 +17,7 @@ public interface AuthorRepository extends JpaRepository<AuthorEntity, Long> {
 
     AuthorEntity findByName(String name);
 
-    @Query("select new com.internship.bookstore.service.dto.AuthorDto(a.id,a.name) from AuthorEntity a")
-    Page<AuthorDto> findAllWithPagination(Pageable pageable);
+    @Query("select a from AuthorEntity a " +
+            "where (:name is null or a.name like concat('%',:name,'%'))")
+    Page<AuthorEntity> find(String name, Pageable pageable);
 }

@@ -14,6 +14,7 @@ public interface GenreRepository extends JpaRepository<GenreEntity, Long> {
 
     GenreEntity findByGenreName(String name);
 
-    @Query("select new com.internship.bookstore.service.dto.GenreDto(g.id,g.genreName) from GenreEntity g")
-    Page<GenreDto> findAllWithPagination(Pageable pageable);
+    @Query("select g from GenreEntity g " +
+            "where (:name is null or g.genreName like concat('%',:name,'%'))")
+    Page<GenreEntity> find(String name, Pageable pageable);
 }

@@ -1,28 +1,29 @@
 package com.internship.bookstore.service;
 
 import com.internship.bookstore.common.exceptions.FileNotFoundException;
-import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.persistence.entity.FileStoreEntity;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.FileStoreRepository;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.FileUtils;
+import com.internship.bookstore.service.dto.FileStoreDto;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 
 /**
  * @author Gurgen Poghosyan
  */
 @Service
+@RequiredArgsConstructor
 public class FileStoreService {
 
     private final FileStoreRepository fileStoreRepository;
@@ -31,17 +32,24 @@ public class FileStoreService {
     @Value("${file.upload-dir}")
     private String pathDirectory;
 
-    @Autowired
-    public FileStoreService(FileStoreRepository fileStoreRepository, BookRepository bookRepository) {
-        this.fileStoreRepository = fileStoreRepository;
-        this.bookRepository = bookRepository;
+
+    public FileStoreDto upload(MultipartFile multipartFile) {
+        FileStoreEntity fileStoreEntity = new FileStoreEntity();
+        String originalFileName = multipartFile.getOriginalFilename();
+            fileStoreEntity.setFileName(originalFileName.substring(0,originalFileName.lastIndexOf(".")));
+            fileStoreEntity.setExtension(originalFileName.substring(originalFileName.lastIndexOf(".")));
+            fileStoreEntity.setCreatedDate(LocalDateTime.now());
+            fileStoreEntity.setPathDirectory(pathDirectory);
+        FileStoreEntity savedFile = fileStoreRepository.save(fileStoreEntity);
+        return FileStoreDto.mapEntityToDto(savedFile);
     }
 
-    public byte[] getImage(Long id) throws IOException {
-        FileStoreEntity fileStoreEntity = fileStoreRepository.findById(id).orElseThrow(()->new FileNotFoundException(id));
-        InputStream in = getClass()
-                .getResourceAsStream(fileStoreEntity.getFilePath());
-        return IOUtils.toByteArray(in);
+    public InputStream getImage(Long id) {
+        FileStoreEntity file = fileStoreRepository.findById(id).orElseThrow(()->new FileNotFoundException(id));
+        return getClass().getResourceAsStream(file.getPathDirectory() + file.getFileName() + file.getExtension());
     }
 
+    public void delete(Long id) {
+        fileStoreRepository.deleteById(id);
+    }
 }

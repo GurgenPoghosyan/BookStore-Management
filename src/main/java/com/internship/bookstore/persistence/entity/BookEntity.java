@@ -38,10 +38,7 @@ public class BookEntity {
     @Column(name = "book_ISBN")
     private String isbn;
 
-    @Column(name = "book_cover_image_id")
-    private Long imageId;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private PublisherEntity publisher;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -59,4 +56,8 @@ public class BookEntity {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private List<AuthorEntity> authors = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "book_cover_image_id", referencedColumnName = "id")
+    private FileStoreEntity bookCoverImage;
 }

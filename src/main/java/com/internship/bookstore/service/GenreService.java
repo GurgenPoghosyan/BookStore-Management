@@ -3,31 +3,25 @@ package com.internship.bookstore.service;
 import com.internship.bookstore.common.exceptions.GenreNotFoundException;
 import com.internship.bookstore.persistence.entity.GenreEntity;
 import com.internship.bookstore.persistence.repository.GenreRepository;
-import com.internship.bookstore.service.criteria.SearchCriteria;
+import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Gurgen Poghosyan
  */
 @Service
-public class GenreService implements CRUDService<GenreDto> {
+@RequiredArgsConstructor
+public class GenreService {
 
     private final GenreRepository genreRepository;
-
-    @Autowired
-    public GenreService(GenreRepository genreRepository) {
-        this.genreRepository = genreRepository;
-    }
-
-
 
     public List<GenreEntity> mapLongListToEntityList(List<Long> genres) {
         List<GenreEntity> list = new ArrayList<>();
@@ -38,33 +32,23 @@ public class GenreService implements CRUDService<GenreDto> {
         return list;
     }
 
-    @Override
     public GenreDto create(GenreDto genreDto) {
         GenreEntity genreEntity = GenreDto.mapDtoToEntity(genreDto);
         GenreEntity savedGenre = genreRepository.save(genreEntity);
         return GenreDto.mapEntityToDto(savedGenre);
     }
 
-    public List<GenreDto> getGenres(String name) {
-        if (name != null) {
-            return genreRepository.findAll().stream().filter(genre -> genre.getGenreName().equalsIgnoreCase(name)).collect(Collectors.toList())
-                    .stream().map(GenreDto::mapEntityToDto).collect(Collectors.toList());
-        }
-        return genreRepository.findAll().stream().map(GenreDto::mapEntityToDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public GenreDto get(Long id) {
+    public GenreDto getGenre(Long id) {
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(() -> new GenreNotFoundException(id));
         return GenreDto.mapEntityToDto(genreEntity);
     }
 
-    public QueryResponseWrapper<GenreDto> getGenres(SearchCriteria criteria) {
-        Page<GenreDto> content = genreRepository.findAllWithPagination(criteria.composePageRequest());
-        return new QueryResponseWrapper<>(content.getTotalElements(), content.getContent());
+    public QueryResponseWrapper<GenreDto> getGenres(GenreSearchCriteria criteria) {
+        Page<GenreEntity> contentEntity = genreRepository.find(criteria.getName(),criteria.composePageRequest());
+        Page<GenreDto> contentDto = contentEntity.map(GenreDto::mapEntityToDto);
+        return new QueryResponseWrapper<>(contentDto.getTotalElements(), contentDto.getContent());
     }
 
-    @Override
     public GenreDto update(GenreDto genreDto, Long id) {
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(() -> new GenreNotFoundException(id));
         GenreEntity mapped = GenreDto.mapDtoToEntity(genreDto);
@@ -73,9 +57,7 @@ public class GenreService implements CRUDService<GenreDto> {
         return GenreDto.mapEntityToDto(savedGenre);
     }
 
-    @Override
     public void delete(Long id) {
-        GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(() -> new GenreNotFoundException(id));
-        genreRepository.delete(genreEntity);
+        genreRepository.deleteById(id);
     }
 }

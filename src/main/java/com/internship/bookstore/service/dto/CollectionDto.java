@@ -22,12 +22,9 @@ public class CollectionDto {
 
     private String name;
 
-    private List<Long> books;
+    private List<BookDto> books;
 
-    public CollectionDto(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    private Long userId;
 
     public static CollectionDto mapEntityToDto(CollectionEntity entity) {
         if (entity == null) {
@@ -36,9 +33,10 @@ public class CollectionDto {
         CollectionDto dto = new CollectionDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
+        dto.setUserId(entity.getUser().getId());
         List<BookEntity> books = entity.getBooks();
         if (!CollectionUtils.isEmpty(books)) {
-            dto.setBooks(entity.getBooks().stream().map(BookEntity::getId).collect(Collectors.toList()));
+            dto.setBooks(books.stream().map(BookDto::mapEntityToDto).collect(Collectors.toList()));
         }
         return dto;
     }
