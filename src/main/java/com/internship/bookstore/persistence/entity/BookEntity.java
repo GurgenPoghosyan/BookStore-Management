@@ -59,5 +59,5 @@ public class BookEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "book_cover_image_id", referencedColumnName = "id")
-    private FileStoreEntity bookCoverImage;
+    private FileStorageEntity bookCoverImage;
 }

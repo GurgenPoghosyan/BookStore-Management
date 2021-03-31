@@ -1,8 +1,11 @@
 package com.internship.bookstore.persistence.entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +18,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FileStoreEntity {
+@ConfigurationProperties(prefix = "file")
+public class FileStorageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +32,8 @@ public class FileStoreEntity {
     @Column(name = "extension")
     private String extension;
 
-    @Column(name = "upload_dir")
-    private String pathDirectory;
+    @Column(name = "document_format")
+    private String documentFormat;
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -37,4 +41,8 @@ public class FileStoreEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private BookEntity book;
+
+    @Value("{file.upload-dir}")
+    @Column(name = "upload_dir")
+    private String uploadDir;
 }

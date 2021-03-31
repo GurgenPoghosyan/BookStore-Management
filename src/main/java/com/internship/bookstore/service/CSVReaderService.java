@@ -40,12 +40,10 @@ public class CSVReaderService {
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
     private final GenreRepository genreRepository;
-    private final FileStoreRepository fileStoreRepository;
+    private final FileStorageRepository fileStorageRepository;
     private final UserRepository userRepository;
     private final CommunityRepository communityRepository;
     private final UserDetailsRepository userDetailsRepository;
-    @Value("${file.upload-dir}")
-    private String pathDirectory;
 
     public void csvBooksProcessor(MultipartFile multipartFile) {
         List<BookEntity> books = new ArrayList<>();
@@ -87,7 +85,7 @@ public class CSVReaderService {
                 bookEntity.setRating(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(0, 10)).setScale(2, RoundingMode.HALF_UP).doubleValue());
                 bookEntity.setIsbn(csvRecord.get("ISBN"));
 
-//                    FileStoreEntity fileStoreEntity = new FileStoreEntity();
+//                    FileStorageEntity fileStoreEntity = new FileStorageEntity();
 //                    String fileUrl = csvRecord.get("Image-URL-S");
 //                    FileUtils.copyURLToFile(new URL(fileUrl), new File(pathDirectory + csvRecord.getRecordNumber()+".jpg"));
 
@@ -96,7 +94,7 @@ public class CSVReaderService {
 //                    fileStoreEntity.setPathDirectory(pathDirectory);
 //                    fileStoreEntity.setFileName(String.valueOf(csvRecord.getRecordNumber()));
 //                    fileStoreEntity.setCreatedDate(LocalDateTime.now());
-//                    FileStoreEntity savedFile = fileStoreRepository.save(fileStoreEntity);
+//                    FileStorageEntity savedFile = fileStorageRepository.save(fileStoreEntity);
 //                    savedFile.setBook(bookEntity);
 //                    bookEntity.setBookCoverImage(savedFile);
                 books.add(bookEntity);

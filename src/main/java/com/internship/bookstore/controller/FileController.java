@@ -1,16 +1,17 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.service.FileStoreService;
-import com.internship.bookstore.service.dto.FileStoreDto;
-import org.apache.commons.io.IOUtils;
+import com.internship.bookstore.service.FileStorageService;
+import com.internship.bookstore.service.dto.FileStorageDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author Gurgen Poghosyan
@@ -19,29 +20,47 @@ import java.io.InputStream;
 @RequestMapping("/file")
 public class FileController {
 
-    private final FileStoreService fileStoreService;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    public FileController(FileStoreService fileStoreService) {
-        this.fileStoreService = fileStoreService;
+    public FileController(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<FileStoreDto> upload(@RequestParam(value = "image") MultipartFile multipartFile) {
-        FileStoreDto fileStoreDto = fileStoreService.upload(multipartFile);
-        return ResponseEntity.ok(fileStoreDto);
+    public ResponseEntity<FileStorageDto> uploadFile(@RequestParam("image") MultipartFile file,
+                                                     @RequestParam("bookId") Long bookId) {
+        FileStorageDto fileStorageDto = fileStorageService.storeFile(file, bookId);
+        return ResponseEntity.ok(fileStorageDto);
     }
 
-    @GetMapping(value = "/{id}",
-            produces = MediaType.IMAGE_JPEG_VALUE)
-    public
-    byte[] getImageWithMediaType(@PathVariable Long id) throws IOException {
-        InputStream in = fileStoreService.getImage(id);
-        return IOUtils.toByteArray(in);
+    @GetMapping("/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id,
+                                                 HttpServletRequest request) {
+        String fileName = fileStorageService.getDocumentName(id);
+        Resource resource = null;
+            try {
+                resource = fileStorageService.loadFileAsResource(fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            String contentType = null;
+            try {
+                contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
     }
 
     @DeleteMapping("/{id}")
     public void deleteImage(@PathVariable Long id) {
-        fileStoreService.delete(id);
+        fileStorageService.delete(id);
     }
 }
