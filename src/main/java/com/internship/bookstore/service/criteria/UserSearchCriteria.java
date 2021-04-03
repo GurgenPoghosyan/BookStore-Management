@@ -9,4 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSearchCriteria extends SearchCriteria{
+
+    private String username;
+
+    private String status;
+
 }

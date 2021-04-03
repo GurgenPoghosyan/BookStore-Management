@@ -6,6 +6,7 @@ import com.internship.bookstore.common.exceptions.GenreNotFoundException;
 import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.entity.BookEntity;
 import com.internship.bookstore.persistence.entity.GenreEntity;
+import com.internship.bookstore.persistence.entity.PublisherEntity;
 import com.internship.bookstore.persistence.repository.AuthorRepository;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.GenreRepository;
@@ -14,11 +15,13 @@ import com.internship.bookstore.service.criteria.BookSearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.dto.GenreDto;
+import com.internship.bookstore.service.dto.PublisherDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,27 +37,41 @@ public class BookService {
     private final PublisherRepository publisherRepository;
 
     public BookDto create(BookDto bookDto) {
-        BookEntity bookEntity = BookDto.mapDtoToEntity(bookDto);
-        bookEntity.setPublisher(publisherRepository.findByName(bookDto.getPublisher().getName()));
-        List<AuthorDto> listOfAuthors = bookDto.getAuthors();
-        for (AuthorDto authorDto: listOfAuthors){
-            AuthorEntity authorEntity = authorRepository.findByName(authorDto.getName());
-            if (authorEntity!=null){
-                bookEntity.getAuthors().add(authorEntity);
-            }else{
-                AuthorEntity savedAuthor = authorRepository.save(AuthorDto.mapDtoToEntity(authorDto));
-                bookEntity.getAuthors().add(savedAuthor);
-            }
+        if (bookDto.getName() == null) {
+            throw new NullPointerException("Book name is required");
         }
-        List<GenreDto> listOfGenres = bookDto.getGenres();
-        for (GenreDto genreDto: listOfGenres){
-            GenreEntity genreEntity = genreRepository.findByGenreName(genreDto.getName());
-            if (genreEntity!=null){
-                bookEntity.getGenres().add(genreEntity);
-            }else{
-                GenreEntity savedGenre = genreRepository.save(GenreDto.mapDtoToEntity(genreDto));
-                bookEntity.getGenres().add(savedGenre);
+        BookEntity bookEntity = BookDto.mapDtoToEntity(bookDto);
+        PublisherDto publisherDto = bookDto.getPublisher();
+        if (publisherDto == null) {
+            throw new NullPointerException("Publisher is required");
+        }
+        PublisherEntity publisherEntity = publisherRepository.findByName(publisherDto.getName());
+        if (publisherEntity == null) {
+            publisherEntity = publisherRepository.save(PublisherDto.mapDtoToEntity(publisherDto));
+        }
+        bookEntity.setPublisher(publisherEntity);
+        List<AuthorDto> listOfAuthors = bookDto.getAuthors();
+        if (listOfAuthors == null) {
+            throw new NullPointerException("Authors list is required");
+        }
+        for (AuthorDto authorDto : listOfAuthors) {
+            AuthorEntity authorEntity = authorRepository.findByName(authorDto.getName());
+            if (authorEntity == null) {
+                authorEntity = authorRepository.save(AuthorDto.mapDtoToEntity(authorDto));
             }
+            bookEntity.getAuthors().add(authorEntity);
+        }
+
+        List<GenreDto> listOfGenres = bookDto.getGenres();
+        if (listOfGenres == null) {
+            throw new NullPointerException("Genres list is required");
+        }
+        for (GenreDto genreDto : listOfGenres) {
+            GenreEntity genreEntity = genreRepository.findByGenreName(genreDto.getName());
+            if (genreEntity == null) {
+                genreEntity = genreRepository.save(GenreDto.mapDtoToEntity(genreDto));
+            }
+            bookEntity.getGenres().add(genreEntity);
         }
         BookEntity savedBookEntity = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(savedBookEntity);
@@ -67,12 +84,12 @@ public class BookService {
 
     public QueryResponseWrapper<BookDto> getBooks(BookSearchCriteria criteria) {
         Page<BookEntity> entityContent = bookRepository.find(criteria.getName(),
-                                                            criteria.getMinRating(),
-                                                            criteria.getStartDate(),
-                                                            criteria.getEndDate(),
-                                                            criteria.getMinPages(),
-                                                            criteria.getMaxPages(),
-                                                            criteria.composePageRequest());
+                criteria.getMinRating(),
+                criteria.getStartDate(),
+                criteria.getEndDate(),
+                criteria.getMinPages(),
+                criteria.getMaxPages(),
+                criteria.composePageRequest());
         Page<BookDto> dtoContent = entityContent.map(BookDto::mapEntityToDto);
         return new QueryResponseWrapper<>(dtoContent.getTotalElements(), dtoContent.getContent());
     }
@@ -82,31 +99,58 @@ public class BookService {
     }
 
     public BookDto update(BookDto bookDto, Long id) {
+        if (bookDto.getName() == null) {
+            throw new NullPointerException("Book name is required");
+        }
         BookEntity bookEntity = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        BookEntity mapped = BookDto.mapDtoToEntity(bookDto);
-        mapped.setPublisher(publisherRepository.findByName(bookDto.getPublisher().getName()));
+        PublisherDto publisherDto = bookDto.getPublisher();
+        if (publisherDto != null) {
+            PublisherEntity publisherEntity = publisherRepository.findByName(publisherDto.getName());
+            if (publisherEntity == null) {
+                publisherEntity = publisherRepository.save(PublisherDto.mapDtoToEntity(publisherDto));
+            }
+            bookEntity.setPublisher(publisherEntity);
+        }
+
         List<AuthorDto> listOfAuthors = bookDto.getAuthors();
-        for (AuthorDto authorDto: listOfAuthors){
-            AuthorEntity authorEntity = authorRepository.findByName(authorDto.getName());
-            if (authorEntity!=null){
-                mapped.getAuthors().add(authorEntity);
-            }else{
-                AuthorEntity savedAuthor = authorRepository.save(AuthorDto.mapDtoToEntity(authorDto));
-                mapped.getAuthors().add(savedAuthor);
+        if (listOfAuthors != null) {
+            List<AuthorEntity> listOfAuthorEntities = new ArrayList<>();
+            for (AuthorDto authorDto : listOfAuthors) {
+                AuthorEntity authorEntity = authorRepository.findByName(authorDto.getName());
+                if (authorEntity == null) {
+                    authorEntity = authorRepository.save(AuthorDto.mapDtoToEntity(authorDto));
+                }
+                listOfAuthorEntities.add(authorEntity);
             }
+            bookEntity.setAuthors(listOfAuthorEntities);
         }
+
         List<GenreDto> listOfGenres = bookDto.getGenres();
-        for (GenreDto genreDto: listOfGenres){
-            GenreEntity genreEntity = genreRepository.findByGenreName(genreDto.getName());
-            if (genreEntity!=null){
-                mapped.getGenres().add(genreEntity);
-            }else{
-                GenreEntity savedGenre = genreRepository.save(GenreDto.mapDtoToEntity(genreDto));
-                mapped.getGenres().add(savedGenre);
+        if (listOfGenres != null) {
+            List<GenreEntity> listOfGenreEntities = new ArrayList<>();
+            for (GenreDto genreDto : listOfGenres) {
+                GenreEntity genreEntity = genreRepository.findByGenreName(genreDto.getName());
+                if (genreEntity == null) {
+                    genreEntity = genreRepository.save(GenreDto.mapDtoToEntity(genreDto));
+                }
+                listOfGenreEntities.add(genreEntity);
             }
+            bookEntity.setGenres(listOfGenreEntities);
         }
-        mapped.setId(bookEntity.getId());
-        BookEntity updatedBookEntity = bookRepository.save(mapped);
+        bookEntity.setName(bookDto.getName());
+        if (bookDto.getIsbn() != null) {
+            bookEntity.setIsbn(bookDto.getIsbn());
+        }
+        if (bookDto.getDate() != null) {
+            bookEntity.setDate(bookDto.getDate());
+        }
+        if (bookDto.getPages() != null) {
+            bookEntity.setPages(bookEntity.getPages());
+        }
+        if (bookDto.getRating() != null) {
+            bookEntity.setRating(bookEntity.getRating());
+        }
+        BookEntity updatedBookEntity = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(updatedBookEntity);
     }
 

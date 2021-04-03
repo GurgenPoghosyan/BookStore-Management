@@ -22,7 +22,7 @@ public class FileStorageDto {
 
     private LocalDateTime createdDate;
 
-    private BookDto book;
+    private Long bookId;
 
     public static FileStorageDto mapEntityToDto(FileStorageEntity entity) {
         if (entity == null) {
@@ -35,19 +35,7 @@ public class FileStorageDto {
         dto.setExtension(entity.getExtension());
         dto.setCreatedDate(entity.getCreatedDate());
         dto.setDocumentFormat(entity.getDocumentFormat());
+        dto.setBookId(entity.getBook().getId());
         return dto;
-    }
-
-    public static FileStorageEntity mapDtoToEntity(FileStorageDto fileStorageDto) {
-        if (fileStorageDto == null) {
-            return null;
-        }
-        FileStorageEntity fileStorageEntity = new FileStorageEntity();
-        fileStorageEntity.setFileName(fileStorageDto.getFileName());
-        fileStorageEntity.setUploadDir(fileStorageDto.getPathDirectory());
-        fileStorageEntity.setExtension(fileStorageDto.getExtension());
-        fileStorageEntity.setCreatedDate(fileStorageDto.getCreatedDate());
-        fileStorageEntity.setDocumentFormat(fileStorageDto.documentFormat);
-        return fileStorageEntity;
     }
 }

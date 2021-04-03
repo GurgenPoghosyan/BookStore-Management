@@ -23,6 +23,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +37,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Gurgen Poghosyan
  */
 @Service
-@RequiredArgsConstructor
 public class CSVReaderService {
 
     private final AuthorRepository authorRepository;
@@ -44,6 +47,24 @@ public class CSVReaderService {
     private final UserRepository userRepository;
     private final CommunityRepository communityRepository;
     private final UserDetailsRepository userDetailsRepository;
+    private final Path fileStorageLocation;
+
+    public CSVReaderService(AuthorRepository authorRepository, PublisherRepository publisherRepository, GenreRepository genreRepository, UserRepository userRepository, UserDetailsRepository userDetailsRepository, FileStorageEntity fileStorageEntity, FileStorageRepository fileStorageRepository, BookRepository bookRepository, CommunityRepository communityRepository) {
+        this.authorRepository = authorRepository;
+        this.publisherRepository = publisherRepository;
+        this.genreRepository = genreRepository;
+        this.userRepository = userRepository;
+        this.userDetailsRepository = userDetailsRepository;
+        this.fileStorageRepository = fileStorageRepository;
+        this.fileStorageLocation = Paths.get(fileStorageEntity.getUploadDir()).toAbsolutePath().normalize();
+        this.bookRepository = bookRepository;
+        this.communityRepository = communityRepository;
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void csvBooksProcessor(MultipartFile multipartFile) {
         List<BookEntity> books = new ArrayList<>();
@@ -85,18 +106,18 @@ public class CSVReaderService {
                 bookEntity.setRating(BigDecimal.valueOf(ThreadLocalRandom.current().nextDouble(0, 10)).setScale(2, RoundingMode.HALF_UP).doubleValue());
                 bookEntity.setIsbn(csvRecord.get("ISBN"));
 
-//                    FileStorageEntity fileStoreEntity = new FileStorageEntity();
-//                    String fileUrl = csvRecord.get("Image-URL-S");
-//                    FileUtils.copyURLToFile(new URL(fileUrl), new File(pathDirectory + csvRecord.getRecordNumber()+".jpg"));
-
-//                    fileStoreEntity.setExtension(extension);
-//                    fileStoreEntity.setFilePath(pathDirectory + csvRecord.getRecordNumber() + ".jpg");
-//                    fileStoreEntity.setPathDirectory(pathDirectory);
-//                    fileStoreEntity.setFileName(String.valueOf(csvRecord.getRecordNumber()));
-//                    fileStoreEntity.setCreatedDate(LocalDateTime.now());
-//                    FileStorageEntity savedFile = fileStorageRepository.save(fileStoreEntity);
-//                    savedFile.setBook(bookEntity);
-//                    bookEntity.setBookCoverImage(savedFile);
+                    FileStorageEntity fileStoreEntity = new FileStorageEntity();
+                    String fileUrl = csvRecord.get("Image-URL-S");
+                    FileUtils.copyURLToFile(new URL(fileUrl), new File(fileStorageLocation.toString() + csvRecord.getRecordNumber()+".jpg"));
+                    Path path = new File(fileStorageLocation.toString() + csvRecord.getRecordNumber()+".jpg").toPath();
+                    fileStoreEntity.setDocumentFormat(Files.probeContentType(path));
+                    fileStoreEntity.setExtension(extension);
+                    fileStoreEntity.setFileName(csvRecord.getRecordNumber() + ".jpg");
+                    fileStoreEntity.setUploadDir(fileStorageLocation.toString());
+                    fileStoreEntity.setCreatedDate(LocalDateTime.now());
+                    FileStorageEntity savedFile = fileStorageRepository.save(fileStoreEntity);
+                    savedFile.setBook(bookEntity);
+                    bookEntity.setBookCoverImage(savedFile);
                 books.add(bookEntity);
                 if (i == maxCount) {
                     bookRepository.saveAll(books);

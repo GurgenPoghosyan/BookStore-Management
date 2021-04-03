@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface CommunityRepository extends JpaRepository<CommunityEntity, Long> {
 
     @Query("select c from CommunityEntity c " +
-            "where (:name is null or c.name like concat('%',:name,'%'))" +
-            "and (:zipCode is null or c.zip like concat('%',:zipCode,'%'))")
+            "where (:name is null or c.name like concat('%',:name,'%')) and " +
+            "(:zipCode is null or c.zip like concat('%',:zipCode,'%'))")
     Page<CommunityEntity> find(String name, String zipCode, Pageable pageable);
 }

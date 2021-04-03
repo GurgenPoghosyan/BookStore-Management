@@ -7,12 +7,8 @@ import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Gurgen Poghosyan
@@ -23,16 +19,10 @@ public class GenreService {
 
     private final GenreRepository genreRepository;
 
-    public List<GenreEntity> mapLongListToEntityList(List<Long> genres) {
-        List<GenreEntity> list = new ArrayList<>();
-        for (Long longId : genres) {
-            GenreEntity byId = genreRepository.findById(longId).orElseThrow(() -> new GenreNotFoundException(longId));
-            list.add(byId);
-        }
-        return list;
-    }
-
     public GenreDto create(GenreDto genreDto) {
+        if (genreDto.getName() == null) {
+            throw new NullPointerException("Genre name is required");
+        }
         GenreEntity genreEntity = GenreDto.mapDtoToEntity(genreDto);
         GenreEntity savedGenre = genreRepository.save(genreEntity);
         return GenreDto.mapEntityToDto(savedGenre);
@@ -44,16 +34,17 @@ public class GenreService {
     }
 
     public QueryResponseWrapper<GenreDto> getGenres(GenreSearchCriteria criteria) {
-        Page<GenreEntity> contentEntity = genreRepository.find(criteria.getName(),criteria.composePageRequest());
+        Page<GenreEntity> contentEntity = genreRepository.find(criteria.getName(), criteria.composePageRequest());
         Page<GenreDto> contentDto = contentEntity.map(GenreDto::mapEntityToDto);
         return new QueryResponseWrapper<>(contentDto.getTotalElements(), contentDto.getContent());
     }
 
     public GenreDto update(GenreDto genreDto, Long id) {
         GenreEntity genreEntity = genreRepository.findById(id).orElseThrow(() -> new GenreNotFoundException(id));
-        GenreEntity mapped = GenreDto.mapDtoToEntity(genreDto);
-        mapped.setId(genreEntity.getId());
-        GenreEntity savedGenre = genreRepository.save(mapped);
+        if (genreDto.getName() != null) {
+            genreEntity.setGenreName(genreDto.getName());
+        }
+        GenreEntity savedGenre = genreRepository.save(genreEntity);
         return GenreDto.mapEntityToDto(savedGenre);
     }
 

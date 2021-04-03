@@ -14,10 +14,10 @@ import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.dto.CollectionDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,14 +32,20 @@ public class CollectionService {
     private final UserRepository userRepository;
 
     public CollectionDto create(CollectionDto collectionDto) {
+        if (collectionDto.getName() == null) {
+            throw new NullPointerException("Collection name is required");
+        }
         CollectionEntity collectionEntity = CollectionDto.mapDtoToEntity(collectionDto);
         List<BookDto> listOfBooks = collectionDto.getBooks();
+        if (listOfBooks == null) {
+            throw new NullPointerException("Book list is required");
+        }
         for (BookDto book : listOfBooks) {
             BookEntity bookEntity = bookRepository.findByName(book.getName());
             collectionEntity.getBooks().add(bookEntity);
         }
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);
-        UserEntity userEntity = userRepository.findById(collectionDto.getUserId()).orElseThrow(()->new UserNotFoundException(collectionDto.getUserId()));
+        UserEntity userEntity = userRepository.findById(collectionDto.getUserId()).orElseThrow(() -> new UserNotFoundException(collectionDto.getUserId()));
         userEntity.getBookCollections().add(savedCollectionEntity);
         UserEntity savedUser = userRepository.save(userEntity);
         collectionEntity.setUser(savedUser);
@@ -62,20 +68,20 @@ public class CollectionService {
 
     public CollectionDto update(CollectionDto collectionDto, Long id) {
         CollectionEntity collectionEntity = collectionRepository.findById(id).orElseThrow(() -> new CollectionNotFoundException(id));
-        CollectionEntity mapped = CollectionDto.mapDtoToEntity(collectionDto);
         List<BookDto> listOfBooks = collectionDto.getBooks();
-        for (BookDto book : listOfBooks) {
-            BookEntity bookEntity = bookRepository.findByName(book.getName());
-            mapped.getBooks().add(bookEntity);
+        if (listOfBooks != null) {
+            List<BookEntity> listOfBookEntities = new ArrayList<>();
+            for (BookDto book : listOfBooks) {
+                BookEntity bookEntity = bookRepository.findByName(book.getName());
+                listOfBookEntities.add(bookEntity);
+            }
+            collectionEntity.setBooks(listOfBookEntities);
         }
-        mapped.setId(collectionEntity.getId());
-        UserEntity userEntity = userRepository.findById(collectionEntity.getUser().getId()).
-                orElseThrow(()->new UserNotFoundException(collectionEntity.getUser().getId()));
-        mapped.setUser(userEntity);
-        CollectionEntity updatedCollectionEntity = collectionRepository.save(mapped);
-        CollectionDto collectionDto1 = CollectionDto.mapEntityToDto(updatedCollectionEntity);
-        collectionDto1.setUserId(userEntity.getId());
-        return collectionDto1;
+        if (collectionDto.getName() != null) {
+            collectionEntity.setName(collectionDto.getName());
+        }
+        CollectionEntity updatedCollectionEntity = collectionRepository.save(collectionEntity);
+        return CollectionDto.mapEntityToDto(updatedCollectionEntity);
     }
 
     public void delete(Long id) {

@@ -56,17 +56,13 @@ public class FileStorageService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//            if (doc != null) {
-//                doc.setFileName(fileName);
-//                doc.setDocumentFormat(multipartFile.getContentType());
-//                fileStorageRepository.save(doc);
-//            } else {
         FileStorageEntity newDoc = new FileStorageEntity();
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
         newDoc.setFileName(fileName);
         newDoc.setDocumentFormat(multipartFile.getContentType());
         newDoc.setBook(bookEntity);
         newDoc.setExtension(extension);
+        newDoc.setUploadDir(fileStorageLocation.toString());
         newDoc.setCreatedDate(LocalDateTime.now());
         FileStorageEntity savedFile = fileStorageRepository.save(newDoc);
         bookEntity.setBookCoverImage(savedFile);

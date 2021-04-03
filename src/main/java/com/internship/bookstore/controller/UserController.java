@@ -2,7 +2,9 @@ package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.UserService;
+import com.internship.bookstore.service.criteria.UserSearchCriteria;
 import com.internship.bookstore.service.dto.UserDto;
+import com.internship.bookstore.service.model.QueryResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,11 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         UserDto dto = userService.getUser(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping()
+    public QueryResponseWrapper<UserDto> getUsers(@RequestBody UserSearchCriteria criteria) {
+        return userService.getUsers(criteria);
     }
 
     @PutMapping("/{id}")

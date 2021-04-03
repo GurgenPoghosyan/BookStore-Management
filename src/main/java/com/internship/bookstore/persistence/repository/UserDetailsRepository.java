@@ -13,15 +13,17 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserDetailsRepository extends JpaRepository<UserDetailsEntity, Long> {
 
     @Query("select ud from UserDetailsEntity ud " +
-            "where (:firstName is null or ud.firstName like concat('%',:firstName,'%') )" +
-            "and (:lastName is null or ud.lastName like concat('%',:lastName,'%'))" +
-            "and (:address is null or ud.address like concat('%',:address,'%')) " +
-            "and (:phoneNumber is null or ud.phoneNumber like concat('%',:phoneNumber,'%')) " +
-            "and (:emailAddress is null or ud.emailAddress like concat('%',:emailAddress,'%') )")
+            "where (:firstName is null or ud.firstName like concat('%',:firstName,'%')) and " +
+            "(:lastName is null or ud.lastName like concat('%',:lastName,'%')) and " +
+            "(:address is null or ud.address like concat('%',:address,'%')) and " +
+            "(:phoneNumber is null or ud.phoneNumber like concat('%',:phoneNumber,'%')) and " +
+            "(:emailAddress is null or ud.emailAddress like concat('%',:emailAddress,'%') )")
     Page<UserDetailsEntity> find(String firstName,
                               String lastName,
                               String address,
                               String phoneNumber,
                               String emailAddress,
                               Pageable pageable);
+
+    UserDetailsEntity findByEmailAddress(String emailAddress);
 }

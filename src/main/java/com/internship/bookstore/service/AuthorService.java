@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * @author Gurgen Poghosyan
@@ -24,6 +21,9 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     public AuthorDto create(AuthorDto authorDto) {
+        if (authorDto.getName() == null) {
+            throw new NullPointerException("Author name is required");
+        }
         AuthorEntity authorEntity = AuthorDto.mapDtoToEntity(authorDto);
         AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
         return AuthorDto.mapEntityToDto(savedAuthorEntity);
@@ -42,22 +42,14 @@ public class AuthorService {
 
     public AuthorDto update(AuthorDto authorDto, Long id) {
         AuthorEntity authorEntity = authorRepository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        authorEntity.setName(authorDto.getName());
+        if (authorDto.getName() != null) {
+            authorEntity.setName(authorDto.getName());
+        }
         AuthorEntity updatedAuthorEntity = authorRepository.save(authorEntity);
         return AuthorDto.mapEntityToDto(updatedAuthorEntity);
     }
 
     public void delete(Long id) {
         authorRepository.deleteById(id);
-    }
-
-
-    public List<AuthorEntity> mapLongListToEntityList(List<Long> listOfAuthors) {
-        List<AuthorEntity> list = new ArrayList<>();
-        for (Long author : listOfAuthors) {
-            AuthorEntity authorEntity = authorRepository.findById(author).orElseThrow(() -> new AuthorNotFoundException(author));
-            list.add(authorEntity);
-        }
-        return list;
     }
 }

@@ -64,6 +64,7 @@ public class BookController {
 
     @GetMapping("/{id}/authors")
     public List<AuthorDto> getBooksAuthors(@PathVariable Long id) {
+
         return bookService.getBooksAuthors(id);
     }
 
