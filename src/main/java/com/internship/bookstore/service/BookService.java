@@ -84,12 +84,15 @@ public class BookService {
 
     public QueryResponseWrapper<BookDto> getBooks(BookSearchCriteria criteria) {
         Page<BookEntity> entityContent = bookRepository.find(criteria.getName(),
-                criteria.getMinRating(),
-                criteria.getStartDate(),
-                criteria.getEndDate(),
-                criteria.getMinPages(),
-                criteria.getMaxPages(),
-                criteria.composePageRequest());
+                                                            criteria.getMinRating(),
+                                                            criteria.getStartDate(),
+                                                            criteria.getEndDate(),
+                                                            criteria.getMinPageSize(),
+                                                            criteria.getMaxPageSize(),
+                                                            criteria.getAuthorName(),
+                                                            criteria.getGenreName(),
+                                                            criteria.getPublisherName(),
+                                                            criteria.composePageRequest());
         Page<BookDto> dtoContent = entityContent.map(BookDto::mapEntityToDto);
         return new QueryResponseWrapper<>(dtoContent.getTotalElements(), dtoContent.getContent());
     }

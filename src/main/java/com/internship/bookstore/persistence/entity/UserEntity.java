@@ -12,7 +12,8 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints =
+        @UniqueConstraint(columnNames = "username"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,16 +32,24 @@ public class UserEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private RoleEntity role;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_communities",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "community_id"))
     private List<CommunityEntity> userCommunities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<CollectionEntity> bookCollections = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "details_id", referencedColumnName = "id")
     private UserDetailsEntity details;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_account_image_id", referencedColumnName = "id")
+    private FileStorageEntity userAccountImage;
 }

@@ -36,7 +36,7 @@ public class AuthorController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<AuthorDto> getAuthors(@RequestBody AuthorSearchCriteria criteria) {
+    public QueryResponseWrapper<AuthorDto> getAuthors(AuthorSearchCriteria criteria) {
         return authorService.getAuthors(criteria);
     }
 

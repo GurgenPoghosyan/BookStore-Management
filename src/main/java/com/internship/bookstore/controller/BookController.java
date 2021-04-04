@@ -46,7 +46,7 @@ public class BookController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<BookDto> getBooks(@RequestBody BookSearchCriteria criteria) {
+    public QueryResponseWrapper<BookDto> getBooks(BookSearchCriteria criteria) {
         return bookService.getBooks(criteria);
     }
 

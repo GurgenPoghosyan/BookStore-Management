@@ -2,6 +2,7 @@ package com.internship.bookstore.service;
 
 import com.internship.bookstore.common.exceptions.BookNotFoundException;
 import com.internship.bookstore.common.exceptions.GenreNotFoundException;
+import com.internship.bookstore.common.exceptions.RoleNotFoundException;
 import com.internship.bookstore.persistence.entity.*;
 import com.internship.bookstore.persistence.repository.*;
 import com.internship.bookstore.service.dto.GenreDto;
@@ -48,8 +49,9 @@ public class CSVReaderService {
     private final CommunityRepository communityRepository;
     private final UserDetailsRepository userDetailsRepository;
     private final Path fileStorageLocation;
+    private final RoleRepository roleRepository;
 
-    public CSVReaderService(AuthorRepository authorRepository, PublisherRepository publisherRepository, GenreRepository genreRepository, UserRepository userRepository, UserDetailsRepository userDetailsRepository, FileStorageEntity fileStorageEntity, FileStorageRepository fileStorageRepository, BookRepository bookRepository, CommunityRepository communityRepository) {
+    public CSVReaderService(AuthorRepository authorRepository, PublisherRepository publisherRepository, GenreRepository genreRepository, UserRepository userRepository, UserDetailsRepository userDetailsRepository, FileStorageEntity fileStorageEntity, FileStorageRepository fileStorageRepository, BookRepository bookRepository, CommunityRepository communityRepository, RoleRepository roleRepository) {
         this.authorRepository = authorRepository;
         this.publisherRepository = publisherRepository;
         this.genreRepository = genreRepository;
@@ -59,6 +61,7 @@ public class CSVReaderService {
         this.fileStorageLocation = Paths.get(fileStorageEntity.getUploadDir()).toAbsolutePath().normalize();
         this.bookRepository = bookRepository;
         this.communityRepository = communityRepository;
+        this.roleRepository = roleRepository;
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (IOException e) {
@@ -116,7 +119,6 @@ public class CSVReaderService {
                     fileStoreEntity.setUploadDir(fileStorageLocation.toString());
                     fileStoreEntity.setCreatedDate(LocalDateTime.now());
                     FileStorageEntity savedFile = fileStorageRepository.save(fileStoreEntity);
-                    savedFile.setBook(bookEntity);
                     bookEntity.setBookCoverImage(savedFile);
                 books.add(bookEntity);
                 if (i == maxCount) {
@@ -230,7 +232,8 @@ public class CSVReaderService {
                 userEntity.setUsername(csvRecord.get("User Name"));
                 userEntity.setPassword(bCryptPasswordEncoder.encode(csvRecord.get("Password;;;;")));
                 userEntity.setStatus("ACTIVE");
-
+                RoleEntity roleEntity = roleRepository.findById(1L).orElseThrow(()->new RoleNotFoundException(1L));
+                userEntity.setRole(roleEntity);
                 userDetailsEntity.setFirstName(csvRecord.get("First Name"));
                 userDetailsEntity.setLastName(csvRecord.get("Last Name"));
                 userDetailsEntity.setEmailAddress(csvRecord.get("E Mail"));

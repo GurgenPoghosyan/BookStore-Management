@@ -19,7 +19,13 @@ public class BookSearchCriteria extends SearchCriteria{
 
     private Double minRating;
 
-    private Integer minPages;
+    private Integer minPageSize;
 
-    private Integer maxPages;
+    private Integer maxPageSize;
+
+    private String authorName;
+
+    private String genreName;
+
+    private String publisherName;
 }

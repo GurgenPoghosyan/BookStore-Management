@@ -37,7 +37,7 @@ public class CollectionController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<CollectionDto> getCollections(@RequestBody CollectionSearchCriteria criteria) {
+    public QueryResponseWrapper<CollectionDto> getCollections(CollectionSearchCriteria criteria) {
         return collectionService.getCollections(criteria);
     }
 

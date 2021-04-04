@@ -1,12 +1,10 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.persistence.entity.CommunityEntity;
 import com.internship.bookstore.service.CommunityService;
 import com.internship.bookstore.service.criteria.CommunitySearchCriteria;
 import com.internship.bookstore.service.dto.CommunityDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +31,7 @@ public class CommunityController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<CommunityDto> getCommunities(@RequestBody CommunitySearchCriteria criteria) {
+    public QueryResponseWrapper<CommunityDto> getCommunities(CommunitySearchCriteria criteria) {
         return communityService.getCommunities(criteria);
     }
 

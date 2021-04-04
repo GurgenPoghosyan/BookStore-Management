@@ -15,6 +15,7 @@ import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserDetailsRepository userDetailsRepository;
     private final CommunityRepository communityRepository;
+    private final PasswordEncoder bCryptEncoder;
 
     public UserDto create(UserDto userDto) {
         if (userDto.getUsername() == null) {
@@ -42,11 +44,12 @@ public class UserService {
         if (userDto.getDetails() == null) {
             throw new NullPointerException("User details are required");
         }
-        UserEntity user = userRepository.findbyUserName(userDto.getUsername());
+        UserEntity user = userRepository.findByUsername(userDto.getUsername());
         if (user!=null){
             throw new RuntimeException("Username is already in use");
         }
         UserEntity userEntity = UserDto.mapDtoToEntity(userDto);
+        userEntity.setPassword(bCryptEncoder.encode(userDto.getPassword()));
         UserDetailsEntity details = UserDetailsDto.mapDtoToEntity(userDto.getDetails());
         details.setUser(userEntity);
         UserDetailsEntity savedDetails = userDetailsRepository.save(details);
@@ -67,8 +70,12 @@ public class UserService {
 
     public QueryResponseWrapper<UserDto> getUsers(UserSearchCriteria criteria) {
         Page<UserEntity> entityContent = userRepository.find(criteria.getUsername(),
-                criteria.getStatus(),
-                criteria.composePageRequest());
+                                                            criteria.getStatus(),
+                                                            criteria.getFirstName(),
+                                                            criteria.getLastName(),
+                                                            criteria.getRole(),
+                                                            criteria.getZipCode(),
+                                                            criteria.composePageRequest());
         Page<UserDto> dtoContent = entityContent.map(UserDto::mapEntityToDto);
         return new QueryResponseWrapper<>(dtoContent.getTotalElements(), dtoContent.getContent());
     }

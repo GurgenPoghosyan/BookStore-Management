@@ -60,7 +60,6 @@ public class FileStorageService {
         BookEntity bookEntity = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException(bookId));
         newDoc.setFileName(fileName);
         newDoc.setDocumentFormat(multipartFile.getContentType());
-        newDoc.setBook(bookEntity);
         newDoc.setExtension(extension);
         newDoc.setUploadDir(fileStorageLocation.toString());
         newDoc.setCreatedDate(LocalDateTime.now());

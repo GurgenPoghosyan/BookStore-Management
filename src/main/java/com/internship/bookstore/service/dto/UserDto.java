@@ -30,6 +30,8 @@ public class UserDto {
 
     private UserDetailsDto details;
 
+    private RoleDto role;
+
     public static UserDto mapEntityToDto(UserEntity entity) {
         if (entity == null) {
             return null;
@@ -40,6 +42,7 @@ public class UserDto {
         dto.setPassword(entity.getPassword());
         dto.setStatus(entity.getStatus());
         dto.setDetails(UserDetailsDto.mapEntityToDto(entity.getDetails()));
+        dto.setRole(RoleDto.mapEntityToDto(entity.getRole()));
         List<CollectionEntity> bookCollections = entity.getBookCollections();
         if (!CollectionUtils.isEmpty(bookCollections)) {
             dto.setBookCollections(bookCollections.stream().map(CollectionDto::mapEntityToDto).collect(Collectors.toList()));
@@ -57,7 +60,7 @@ public class UserDto {
         }
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userDto.getUsername());
-        userEntity.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
+        userEntity.setPassword(userDto.getPassword());
         userEntity.setStatus(userDto.getStatus());
         return userEntity;
     }

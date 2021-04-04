@@ -10,8 +10,16 @@ import lombok.Setter;
 @Setter
 public class UserSearchCriteria extends SearchCriteria{
 
+    private String firstName;
+
+    private String lastName;
+
     private String username;
 
     private String status;
+
+    private String role;
+
+    private String zipCode;
 
 }

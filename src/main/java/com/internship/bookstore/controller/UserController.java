@@ -26,7 +26,7 @@ public class UserController {
         this.csvReaderService = csvReaderService;
     }
 
-    @PostMapping
+    @PostMapping("/registration")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         UserDto dto = userService.create(userDto);
         return ResponseEntity.ok(dto);
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<UserDto> getUsers(@RequestBody UserSearchCriteria criteria) {
+    public QueryResponseWrapper<UserDto> getUsers(UserSearchCriteria criteria) {
         return userService.getUsers(criteria);
     }
 

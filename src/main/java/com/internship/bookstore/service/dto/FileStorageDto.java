@@ -35,7 +35,6 @@ public class FileStorageDto {
         dto.setExtension(entity.getExtension());
         dto.setCreatedDate(entity.getCreatedDate());
         dto.setDocumentFormat(entity.getDocumentFormat());
-        dto.setBookId(entity.getBook().getId());
         return dto;
     }
 }

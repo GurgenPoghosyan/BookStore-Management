@@ -38,10 +38,6 @@ public class FileStorageEntity {
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "book_id", referencedColumnName = "id")
-    private BookEntity book;
-
     @Value("{file.upload-dir}")
     @Column(name = "upload_dir")
     private String uploadDir;

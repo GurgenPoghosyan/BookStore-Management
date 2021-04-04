@@ -42,7 +42,7 @@ public class GenreController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<GenreDto> getGenres(@RequestBody GenreSearchCriteria criteria) {
+    public QueryResponseWrapper<GenreDto> getGenres(GenreSearchCriteria criteria) {
         return genreService.getGenres(criteria);
     }
 

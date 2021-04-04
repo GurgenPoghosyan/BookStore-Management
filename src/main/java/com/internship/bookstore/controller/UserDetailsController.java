@@ -36,7 +36,7 @@ public class UserDetailsController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<UserDetailsDto> getUserDetails(@RequestBody UserDetailsSearchCriteria criteria) {
+    public QueryResponseWrapper<UserDetailsDto> getUserDetails(UserDetailsSearchCriteria criteria) {
         return userDetailsService.getUserDetails(criteria);
     }
 

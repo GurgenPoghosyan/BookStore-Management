@@ -36,7 +36,7 @@ public class PublisherController {
     }
 
     @GetMapping()
-    public QueryResponseWrapper<PublisherDto> getPublishers(@RequestBody PublisherSearchCriteria criteria) {
+    public QueryResponseWrapper<PublisherDto> getPublishers(PublisherSearchCriteria criteria) {
         return publisherService.getPublishers(criteria);
     }
 
