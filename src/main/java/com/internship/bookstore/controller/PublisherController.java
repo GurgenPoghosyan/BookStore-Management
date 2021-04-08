@@ -6,6 +6,7 @@ import com.internship.bookstore.service.criteria.PublisherSearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.PublisherDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,10 @@ import org.springframework.web.bind.annotation.*;
  * @author Gurgen Poghosyan
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/publishers")
 public class PublisherController {
     private final PublisherService publisherService;
-
-    @Autowired
-    public PublisherController(PublisherService publisherService) {
-        this.publisherService = publisherService;
-    }
 
     @PostMapping()
     public ResponseEntity<PublisherDto> createPublisher(@RequestBody PublisherDto publisherDto) {

@@ -5,24 +5,23 @@ import com.internship.bookstore.service.criteria.CollectionSearchCriteria;
 import com.internship.bookstore.service.dto.CollectionDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
 import com.internship.bookstore.transform.requestbody.collection.AddBookToCollectionRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Gurgen Poghosyan
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/collections")
+@PreAuthorize("hasRole('USER')")
 public class CollectionController {
 
     private final CollectionService collectionService;
-
-    @Autowired
-    public CollectionController(CollectionService collectionService) {
-        this.collectionService = collectionService;
-    }
 
     @PostMapping
     public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionDto collectionDto) {

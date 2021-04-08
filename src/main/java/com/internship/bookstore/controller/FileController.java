@@ -2,11 +2,13 @@ package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.FileStorageService;
 import com.internship.bookstore.service.dto.FileStorageDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,17 +19,14 @@ import java.io.IOException;
  * @author Gurgen Poghosyan
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/file")
 public class FileController {
 
     private final FileStorageService fileStorageService;
 
-    @Autowired
-    public FileController(FileStorageService fileStorageService) {
-        this.fileStorageService = fileStorageService;
-    }
-
     @PostMapping("/upload")
+    @PreAuthorize("hasAnyRole('EDITOR','USER')")
     public ResponseEntity<FileStorageDto> uploadFile(@RequestParam("image") MultipartFile file,
                                                      @RequestParam("bookId") Long bookId) {
         FileStorageDto fileStorageDto = fileStorageService.storeFile(file, bookId);
@@ -35,6 +34,7 @@ public class FileController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id,
                                                  HttpServletRequest request) {
         String fileName = fileStorageService.getDocumentName(id);

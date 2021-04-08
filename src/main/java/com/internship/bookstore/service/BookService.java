@@ -20,6 +20,7 @@ import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,5 +188,9 @@ public class BookService {
         bookEntity.getGenres().add(genreEntity);
         BookEntity savedBook = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(savedBook);
+    }
+
+    public void saveBooks(MultipartFile multipartFile) {
+
     }
 }

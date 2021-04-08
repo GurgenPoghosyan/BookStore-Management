@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +25,9 @@ public class UserDto {
 
     private String status;
 
-    private List<CommunityDto> userCommunities;
+    private List<CommunityDto> userCommunities = new ArrayList<>();
 
-    private List<CollectionDto> bookCollections;
+    private List<CollectionDto> bookCollections = new ArrayList<>();
 
     private UserDetailsDto details;
 

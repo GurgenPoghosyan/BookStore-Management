@@ -6,8 +6,10 @@ import com.internship.bookstore.service.GenreService;
 import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
 import com.internship.bookstore.service.model.QueryResponseWrapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,17 +19,13 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/genres")
+@PreAuthorize("hasRole('ADMIN')")
 public class GenreController {
 
     private final GenreService genreService;
     private final CSVReaderService csvReaderService;
-
-    @Autowired
-    public GenreController(GenreService genreService, CSVReaderService csvReaderService) {
-        this.genreService = genreService;
-        this.csvReaderService = csvReaderService;
-    }
 
     @PostMapping()
     public ResponseEntity<GenreDto> createGenre(@RequestBody GenreDto genreDto) {
@@ -58,7 +56,7 @@ public class GenreController {
         genreService.delete(id);
     }
 
-    @PostMapping("/read-csv")
+    @PostMapping("/upload")
     public List<GenreDto> readGenre(@RequestParam("genres") MultipartFile multipartFile) {
         return csvReaderService.csvGenreProcessor(multipartFile);
     }
