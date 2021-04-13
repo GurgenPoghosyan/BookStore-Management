@@ -22,6 +22,9 @@ public class CommunityController {
 
     @PostMapping()
     public ResponseEntity<CommunityDto> createCommunity(@RequestBody CommunityDto communityDto) {
+        if (communityDto.getName() == null) {
+            throw new NullPointerException("Community name is required");
+        }
         CommunityDto dto = communityService.create(communityDto);
         return ResponseEntity.ok(dto);
     }

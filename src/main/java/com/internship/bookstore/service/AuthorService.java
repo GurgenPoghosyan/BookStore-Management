@@ -21,9 +21,6 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
 
     public AuthorDto create(AuthorDto authorDto) {
-        if (authorDto.getName() == null) {
-            throw new NullPointerException("Author name is required");
-        }
         AuthorEntity authorEntity = AuthorDto.mapDtoToEntity(authorDto);
         AuthorEntity savedAuthorEntity = authorRepository.save(authorEntity);
         return AuthorDto.mapEntityToDto(savedAuthorEntity);

@@ -23,6 +23,15 @@ public class UserDetailsController {
     @PostMapping()
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<UserDetailsDto> createUserDetails(@RequestBody UserDetailsDto userDetailsDto) {
+        if (userDetailsDto.getFirstName() == null) {
+            throw new NullPointerException("FirstName is required");
+        }
+        if (userDetailsDto.getLastName() == null) {
+            throw new NullPointerException("LastName is required");
+        }
+        if (userDetailsDto.getEmailAddress() == null) {
+            throw new NullPointerException("Email address is required");
+        }
         UserDetailsDto dto = userDetailsService.create(userDetailsDto);
         return ResponseEntity.ok(dto);
     }

@@ -20,6 +20,9 @@ public class RoleController {
 
     @PostMapping()
     public ResponseEntity<RoleDto> createRole(@RequestBody RoleDto roleDto) {
+        if (roleDto.getName() == null) {
+            throw new NullPointerException("Role name is required");
+        }
         RoleDto dto = roleService.create(roleDto);
         return ResponseEntity.ok(dto);
     }

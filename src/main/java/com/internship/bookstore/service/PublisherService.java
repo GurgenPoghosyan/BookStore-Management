@@ -20,9 +20,6 @@ public class PublisherService {
     private final PublisherRepository publisherRepository;
 
     public PublisherDto create(PublisherDto publisherDto) {
-        if (publisherDto.getName() == null) {
-            throw new NullPointerException("Publisher name is required");
-        }
         PublisherEntity publisherEntity = PublisherDto.mapDtoToEntity(publisherDto);
         PublisherEntity savedPublisherEntity = publisherRepository.save(publisherEntity);
         return PublisherDto.mapEntityToDto(savedPublisherEntity);

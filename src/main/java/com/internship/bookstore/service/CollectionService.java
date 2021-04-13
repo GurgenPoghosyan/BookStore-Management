@@ -33,14 +33,8 @@ public class CollectionService {
     private final UserRepository userRepository;
 
     public CollectionDto create(CollectionDto collectionDto, SessionUser sessionUser) {
-        if (collectionDto.getName() == null) {
-            throw new NullPointerException("Collection name is required");
-        }
         CollectionEntity collectionEntity = CollectionDto.mapDtoToEntity(collectionDto);
         List<BookDto> listOfBooks = collectionDto.getBooks();
-        if (listOfBooks == null) {
-            throw new NullPointerException("Book list is required");
-        }
         for (BookDto book : listOfBooks) {
             BookEntity bookEntity = bookRepository.findByName(book.getName());
             collectionEntity.getBooks().add(bookEntity);

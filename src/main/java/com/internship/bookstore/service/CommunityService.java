@@ -20,9 +20,6 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
 
     public CommunityDto create(CommunityDto dto) {
-        if (dto.getName() == null) {
-            throw new NullPointerException("Community name is required");
-        }
         CommunityEntity communityEntity = CommunityDto.mapDtoToEntity(dto);
         CommunityEntity savedCommunity = communityRepository.save(communityEntity);
         return CommunityDto.mapEntityToDto(savedCommunity);

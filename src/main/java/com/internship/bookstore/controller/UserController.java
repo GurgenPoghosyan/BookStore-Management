@@ -31,6 +31,18 @@ public class UserController {
 
     @PostMapping("/registration")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        if (userDto.getUsername() == null) {
+            throw new NullPointerException("Username is required");
+        }
+        if (userDto.getPassword() == null) {
+            throw new NullPointerException("Password is required");
+        }
+        if (userDto.getDetails() == null) {
+            throw new NullPointerException("User details are required");
+        }
+        if (userDto.getRole() == null) {
+            throw new NullPointerException("Role is required");
+        }
         UserDto dto = userService.create(userDto);
         return ResponseEntity.ok(dto);
     }

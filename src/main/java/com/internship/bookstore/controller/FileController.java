@@ -50,9 +50,4 @@ public class FileController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
     }
-
-    @DeleteMapping("/{id}")
-    public void deleteImage(@PathVariable Long id) {
-        fileStorageService.delete(id);
-    }
 }

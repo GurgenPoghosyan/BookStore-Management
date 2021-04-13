@@ -22,6 +22,9 @@ public class AuthorController {
 
     @PostMapping()
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+        if (authorDto.getName() == null) {
+            throw new NullPointerException("Author name is required");
+        }
         AuthorDto dto = authorService.create(authorDto);
         return ResponseEntity.ok(dto);
     }

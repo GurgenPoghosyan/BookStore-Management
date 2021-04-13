@@ -36,11 +36,21 @@ public class BookController {
     @PostMapping
     @PreAuthorize("hasAuthority('EDITOR')")
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+        if (bookDto.getName() == null) {
+            throw new NullPointerException("Book name is required");
+        }
+        if (bookDto.getAuthors() == null) {
+            throw new NullPointerException("Authors list is required");
+        }
+        if (bookDto.getGenres() == null) {
+            throw new NullPointerException("Genres list is required");
+        }
         BookDto dto = bookService.create(bookDto);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('EDITOR','ADMIN')")
     public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
         BookDto dto = bookService.getBook(id);
         return ResponseEntity.ok(dto);

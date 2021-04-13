@@ -65,12 +65,8 @@ public class FileStorageService {
         }
     }
 
-    public String getDocumentName(Long bookId) {
-        return fileStorageRepository.getUploadDocumentPath(bookId);
-    }
-
-    public void delete(Long id) {
-        fileStorageRepository.deleteById(id);
+    public String getDocumentName(Long id) {
+        return fileStorageRepository.getUploadDocumentPath(id);
     }
 
 }

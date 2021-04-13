@@ -37,23 +37,14 @@ public class BookService {
     private final FileStorageService fileStorageService;
 
     public BookDto create(BookDto bookDto) {
-        if (bookDto.getName() == null) {
-            throw new NullPointerException("Book name is required");
-        }
         BookEntity bookEntity = BookDto.mapDtoToEntity(bookDto);
         PublisherDto publisherDto = bookDto.getPublisher();
-        if (publisherDto == null) {
-            throw new NullPointerException("Publisher is required");
-        }
         PublisherEntity publisherEntity = publisherRepository.findByName(publisherDto.getName());
         if (publisherEntity == null) {
             publisherEntity = publisherRepository.save(PublisherDto.mapDtoToEntity(publisherDto));
         }
         bookEntity.setPublisher(publisherEntity);
         List<AuthorDto> listOfAuthors = bookDto.getAuthors();
-        if (listOfAuthors == null) {
-            throw new NullPointerException("Authors list is required");
-        }
         for (AuthorDto authorDto : listOfAuthors) {
             AuthorEntity authorEntity = authorRepository.findByName(authorDto.getName());
             if (authorEntity == null) {
@@ -63,9 +54,6 @@ public class BookService {
         }
 
         List<GenreDto> listOfGenres = bookDto.getGenres();
-        if (listOfGenres == null) {
-            throw new NullPointerException("Genres list is required");
-        }
         for (GenreDto genreDto : listOfGenres) {
             GenreEntity genreEntity = genreRepository.findByGenreName(genreDto.getName());
             if (genreEntity == null) {

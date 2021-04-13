@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface FileStorageRepository extends JpaRepository<FileStorageEntity, Long> {
 
-    @Query("Select f.fileName from FileStorageEntity f where f.id = :id")
+    @Query("select f.fileName from FileStorageEntity f where f.id = :id")
     String getUploadDocumentPath(Long id);
 }

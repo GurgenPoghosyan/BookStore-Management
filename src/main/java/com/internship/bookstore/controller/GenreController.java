@@ -27,6 +27,9 @@ public class GenreController {
 
     @PostMapping()
     public ResponseEntity<GenreDto> createGenre(@RequestBody GenreDto genreDto) {
+        if (genreDto.getName() == null) {
+            throw new NullPointerException("Genre name is required");
+        }
         GenreDto dto = genreService.create(genreDto);
         return ResponseEntity.ok(dto);
     }

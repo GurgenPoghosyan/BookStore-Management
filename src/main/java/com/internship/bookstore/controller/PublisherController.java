@@ -21,6 +21,9 @@ public class PublisherController {
 
     @PostMapping()
     public ResponseEntity<PublisherDto> createPublisher(@RequestBody PublisherDto publisherDto) {
+        if (publisherDto.getName() == null) {
+            throw new NullPointerException("Publisher name is required");
+        }
         PublisherDto dto = publisherService.create(publisherDto);
         return ResponseEntity.ok(dto);
     }

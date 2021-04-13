@@ -18,9 +18,6 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     public RoleDto create(RoleDto roleDto) {
-        if (roleDto.getName() == null) {
-            throw new NullPointerException("Role name is required");
-        }
         RoleEntity roleEntity = RoleDto.mapDtoToEntity(roleDto);
         RoleEntity savedRole = roleRepository.save(roleEntity);
         return RoleDto.mapEntityToDto(savedRole);

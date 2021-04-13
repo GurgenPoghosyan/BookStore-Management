@@ -29,8 +29,14 @@ public class CollectionController {
     @PostMapping
     public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionDto collectionDto,
                                                           @ModelAttribute(SESSION_USER_KEY) SessionUser sessionUser) {
+        if (collectionDto.getName() == null) {
+            throw new NullPointerException("Collection name is required");
+        }
+        if (collectionDto.getBooks() == null) {
+            throw new NullPointerException("Book list is required");
+        }
         CollectionDto dto = collectionService.create(collectionDto,sessionUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")

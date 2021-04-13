@@ -20,9 +20,6 @@ public class GenreService {
     private final GenreRepository genreRepository;
 
     public GenreDto create(GenreDto genreDto) {
-        if (genreDto.getName() == null) {
-            throw new NullPointerException("Genre name is required");
-        }
         GenreEntity genreEntity = GenreDto.mapDtoToEntity(genreDto);
         GenreEntity savedGenre = genreRepository.save(genreEntity);
         return GenreDto.mapEntityToDto(savedGenre);

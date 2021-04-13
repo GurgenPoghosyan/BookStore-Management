@@ -20,15 +20,6 @@ public class UserDetailsService {
     private final UserDetailsRepository userDetailsRepository;
 
     public UserDetailsDto create(UserDetailsDto userDetailsDto) {
-        if (userDetailsDto.getFirstName() == null) {
-            throw new NullPointerException("FirstName is required");
-        }
-        if (userDetailsDto.getLastName() == null) {
-            throw new NullPointerException("LastName is required");
-        }
-        if (userDetailsDto.getEmailAddress() == null) {
-            throw new NullPointerException("Email address is required");
-        }
         UserDetailsEntity detailsEntity = userDetailsRepository.findByEmailAddress(userDetailsDto.getEmailAddress());
         if (detailsEntity !=null){
             throw new RuntimeException("Email address is already in use");
