@@ -1,4 +1,4 @@
-package com.internship.bookstore.service.model;
+package com.internship.bookstore.service.model.wrapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,7 +3,7 @@ package com.internship.bookstore.controller;
 import com.internship.bookstore.service.CommunityService;
 import com.internship.bookstore.service.criteria.CommunitySearchCriteria;
 import com.internship.bookstore.service.dto.CommunityDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/communities")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class CommunityController {
 
     private final CommunityService communityService;

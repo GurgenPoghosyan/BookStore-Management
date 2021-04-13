@@ -22,8 +22,6 @@ public class FileStorageDto {
 
     private LocalDateTime createdDate;
 
-    private Long bookId;
-
     public static FileStorageDto mapEntityToDto(FileStorageEntity entity) {
         if (entity == null) {
             return null;

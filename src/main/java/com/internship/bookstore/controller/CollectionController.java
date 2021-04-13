@@ -1,31 +1,35 @@
 package com.internship.bookstore.controller;
 
+import com.internship.bookstore.security.session.SessionUser;
 import com.internship.bookstore.service.CollectionService;
 import com.internship.bookstore.service.criteria.CollectionSearchCriteria;
 import com.internship.bookstore.service.dto.CollectionDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import com.internship.bookstore.transform.requestbody.collection.AddBookToCollectionRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import static com.internship.bookstore.security.session.SessionUser.SESSION_USER_KEY;
 
 /**
  * @author Gurgen Poghosyan
  */
 @RestController
 @RequiredArgsConstructor
+@SessionAttributes(SESSION_USER_KEY)
 @RequestMapping("/collections")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasAuthority('USER')")
 public class CollectionController {
 
     private final CollectionService collectionService;
 
     @PostMapping
-    public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionDto collectionDto) {
-        CollectionDto dto = collectionService.create(collectionDto);
+    public ResponseEntity<CollectionDto> createCollection(@RequestBody CollectionDto collectionDto,
+                                                          @ModelAttribute(SESSION_USER_KEY) SessionUser sessionUser) {
+        CollectionDto dto = collectionService.create(collectionDto,sessionUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

@@ -20,21 +20,13 @@ import java.io.IOException;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/files")
 public class FileController {
 
     private final FileStorageService fileStorageService;
 
-    @PostMapping("/upload")
-    @PreAuthorize("hasAnyRole('EDITOR','USER')")
-    public ResponseEntity<FileStorageDto> uploadFile(@RequestParam("image") MultipartFile file,
-                                                     @RequestParam("bookId") Long bookId) {
-        FileStorageDto fileStorageDto = fileStorageService.storeFile(file, bookId);
-        return ResponseEntity.ok(fileStorageDto);
-    }
-
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id,
                                                  HttpServletRequest request) {
         String fileName = fileStorageService.getDocumentName(id);

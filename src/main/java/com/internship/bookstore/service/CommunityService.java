@@ -5,7 +5,7 @@ import com.internship.bookstore.persistence.entity.CommunityEntity;
 import com.internship.bookstore.persistence.repository.CommunityRepository;
 import com.internship.bookstore.service.criteria.CommunitySearchCriteria;
 import com.internship.bookstore.service.dto.CommunityDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

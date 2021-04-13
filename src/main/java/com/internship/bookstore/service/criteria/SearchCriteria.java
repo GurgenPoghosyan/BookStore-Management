@@ -28,6 +28,7 @@ public class SearchCriteria implements Serializable {
 
         int page = this.page == null ? 0 : this.page;
         int size = this.size == null ? 20 : this.size;
+
         sortField = this.sortField == null ? "id" : this.sortField;
         Sort.Direction sortDirection = this.sortDirection == null ? Sort.Direction.ASC : Sort.Direction.valueOf(this.sortDirection.toUpperCase());
 

@@ -2,43 +2,32 @@ package com.internship.bookstore.service;
 
 import com.internship.bookstore.common.exceptions.RoleNotFoundException;
 import com.internship.bookstore.common.exceptions.UserNotFoundException;
-import com.internship.bookstore.common.threads.UserSaveThread;
-import com.internship.bookstore.common.util.FileSplitter;
-import com.internship.bookstore.common.util.UserCsvParser;
-import com.internship.bookstore.persistence.entity.CommunityEntity;
-import com.internship.bookstore.persistence.entity.RoleEntity;
-import com.internship.bookstore.persistence.entity.UserDetailsEntity;
-import com.internship.bookstore.persistence.entity.UserEntity;
+import com.internship.bookstore.common.util.CsvParser;
+import com.internship.bookstore.persistence.entity.*;
 import com.internship.bookstore.persistence.repository.CommunityRepository;
 import com.internship.bookstore.persistence.repository.RoleRepository;
 import com.internship.bookstore.persistence.repository.UserDetailsRepository;
 import com.internship.bookstore.persistence.repository.UserRepository;
+import com.internship.bookstore.security.session.SessionUser;
 import com.internship.bookstore.service.criteria.UserSearchCriteria;
 import com.internship.bookstore.service.dto.CommunityDto;
-import com.internship.bookstore.service.dto.RoleDto;
+import com.internship.bookstore.service.dto.FileStorageDto;
 import com.internship.bookstore.service.dto.UserDetailsDto;
 import com.internship.bookstore.service.dto.UserDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.UserCsvModel;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -51,9 +40,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserDetailsRepository userDetailsRepository;
     private final CommunityRepository communityRepository;
+    private final FileStorageService fileStorageService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder bCryptEncoder;
-    private final UserCsvParser userCsvParser;
+    private final CsvParser userCsvParser;
 
     public UserDto create(UserDto userDto) {
         if (userDto.getUsername() == null) {
@@ -78,7 +68,7 @@ public class UserService {
         details.setUser(userEntity);
         UserDetailsEntity savedDetails = userDetailsRepository.save(details);
         userEntity.setDetails(savedDetails);
-        RoleEntity roleEntity = roleRepository.findByName(userDto.getRole().getName()).orElseThrow(()->new RoleNotFoundException(userDto.getRole().getName()));
+        RoleEntity roleEntity = roleRepository.findByName(userDto.getRole().getName()).orElseThrow(() -> new RoleNotFoundException(userDto.getRole().getName()));
         userEntity.setRole(roleEntity);
         List<CommunityDto> userCommunities = userDto.getUserCommunities();
         if (!CollectionUtils.isEmpty(userCommunities)) {
@@ -125,58 +115,77 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public FileStorageDto uploadFile(MultipartFile multipartFile, SessionUser sessionUser){
+        FileStorageEntity fileStorageEntity = new FileStorageEntity();
+        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String fileName = System.currentTimeMillis() + extension;
+        fileStorageEntity.setFileName(fileName);
+        fileStorageEntity.setExtension(extension);
+        FileStorageEntity savedFile = fileStorageService.storeFile(multipartFile, fileStorageEntity);
+
+        UserEntity userEntity = userRepository.findById(sessionUser.getId()).orElseThrow(() -> new UserNotFoundException(sessionUser.getId()));
+        userEntity.setUserAccountImage(savedFile);
+        userRepository.save(userEntity);
+        return FileStorageDto.mapEntityToDto(savedFile);
+    }
+
     public void saveAll(List<UserEntity> list) {
         userRepository.saveAll(list);
     }
+//    public void mapFileToListOfEntities(MultipartFile multipartFile) {
+//            List<UserDto> list = userCsvParser.parseCsv(multipartFile);
+//            List<UserEntity> users = new ArrayList<>();
+//            for (UserDto userDto : list) {
+//                UserEntity userEntity = UserDto.mapDtoToEntity(userDto);
+//                RoleEntity roleEntity = roleRepository.findById(1L).orElseThrow(()->new RoleNotFoundException(1L));
+//                userEntity.setRole(roleEntity);
+//
+//                UserDetailsDto details = userDto.getDetails();
+//                UserDetailsEntity userDetailsEntity = UserDetailsDto.mapDtoToEntity(details);
+//                UserDetailsEntity savedDetails = userDetailsRepository.save(userDetailsEntity);
+//                userEntity.setDetails(savedDetails);
+//
+//                List<CommunityDto> communities = userDto.getUserCommunities();
+//                List<CommunityEntity> communityEntities = communities.stream().map(CommunityDto::mapDtoToEntity).collect(Collectors.toList());
+//                List<CommunityEntity> entities = communityRepository.saveAll(communityEntities);
+//                userEntity.setUserCommunities(entities);
+//
+//                users.add(userEntity);
+//            }
+//            saveAll(users);
+//    }
+//
+//    public void saveUsers(MultipartFile multipartFile){
+//        ExecutorService es = Executors.newFixedThreadPool(200);
+//        FileSplitter fileSplitter = new FileSplitter();
+//        try {
+//            List<File> files = fileSplitter.splitFile(multipartFile,10);
+//
+//            for (File file : files) {
+//                FileItem fileItem = new DiskFileItem(file.getName(), Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+//
+//                try {
+//                     IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+//                } catch (IOException ex) {
+//                    ex.printStackTrace();
+//                }
+//
+//                MultipartFile multipartFile1 = new CommonsMultipartFile(fileItem);
+//                UserSaveThread userSaveThread = new UserSaveThread(this,multipartFile1,userCsvParser);
+//                userSaveThread.run();
+//                es.submit(userSaveThread);
+//
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        es.shutdown();
+//    }
+    public Map<String,String> saveUsers(MultipartFile multipartFile) {
+        List<List<UserCsvModel>> list = userCsvParser.getEntitiesFromCsv(multipartFile);
 
-    public void mapFileToListOfEntities(MultipartFile multipartFile) {
-            List<UserDto> list = userCsvParser.parseCsv(multipartFile);
-            List<UserEntity> users = new ArrayList<>();
-            for (UserDto userDto : list) {
-                UserEntity userEntity = UserDto.mapDtoToEntity(userDto);
-                RoleEntity roleEntity = roleRepository.findById(1L).orElseThrow(()->new RoleNotFoundException(1L));
-                userEntity.setRole(roleEntity);
-
-                UserDetailsDto details = userDto.getDetails();
-                UserDetailsEntity userDetailsEntity = UserDetailsDto.mapDtoToEntity(details);
-                UserDetailsEntity savedDetails = userDetailsRepository.save(userDetailsEntity);
-                userEntity.setDetails(savedDetails);
-
-                List<CommunityDto> communities = userDto.getUserCommunities();
-                List<CommunityEntity> communityEntities = communities.stream().map(CommunityDto::mapDtoToEntity).collect(Collectors.toList());
-                List<CommunityEntity> entities = communityRepository.saveAll(communityEntities);
-                userEntity.setUserCommunities(entities);
-
-                users.add(userEntity);
-            }
-            saveAll(users);
-    }
-
-    public void saveUsers(MultipartFile multipartFile){
-        ExecutorService es = Executors.newFixedThreadPool(200);
-        FileSplitter fileSplitter = new FileSplitter();
-        try {
-            List<File> files = fileSplitter.splitFile(multipartFile,1);
-
-            for (File file : files) {
-                FileItem fileItem = new DiskFileItem(file.getName(), Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
-
-                try {
-                     IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-                MultipartFile multipartFile1 = new CommonsMultipartFile(fileItem);
-                UserSaveThread userSaveThread = new UserSaveThread(this,multipartFile1,userCsvParser);
-                userSaveThread.run();
-                es.submit(userSaveThread);
-
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        es.shutdown();
+        return null;
     }
 }

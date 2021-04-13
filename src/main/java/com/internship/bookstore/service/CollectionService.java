@@ -9,10 +9,11 @@ import com.internship.bookstore.persistence.entity.UserEntity;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.CollectionRepository;
 import com.internship.bookstore.persistence.repository.UserRepository;
+import com.internship.bookstore.security.session.SessionUser;
 import com.internship.bookstore.service.criteria.CollectionSearchCriteria;
 import com.internship.bookstore.service.dto.BookDto;
 import com.internship.bookstore.service.dto.CollectionDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class CollectionService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
 
-    public CollectionDto create(CollectionDto collectionDto) {
+    public CollectionDto create(CollectionDto collectionDto, SessionUser sessionUser) {
         if (collectionDto.getName() == null) {
             throw new NullPointerException("Collection name is required");
         }
@@ -45,14 +46,12 @@ public class CollectionService {
             collectionEntity.getBooks().add(bookEntity);
         }
         CollectionEntity savedCollectionEntity = collectionRepository.save(collectionEntity);
-        UserEntity userEntity = userRepository.findById(collectionDto.getUserId()).orElseThrow(() -> new UserNotFoundException(collectionDto.getUserId()));
+        UserEntity userEntity = userRepository.findById(sessionUser.getId()).orElseThrow(() -> new UserNotFoundException(sessionUser.getId()));
         userEntity.getBookCollections().add(savedCollectionEntity);
         UserEntity savedUser = userRepository.save(userEntity);
         collectionEntity.setUser(savedUser);
         collectionRepository.save(collectionEntity);
-        CollectionDto collectionDto1 = CollectionDto.mapEntityToDto(savedCollectionEntity);
-        collectionDto1.setUserId(savedUser.getId());
-        return collectionDto1;
+        return CollectionDto.mapEntityToDto(savedCollectionEntity);
     }
 
     public CollectionDto getCollection(Long id) {

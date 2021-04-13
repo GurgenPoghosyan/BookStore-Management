@@ -24,8 +24,6 @@ public class CollectionDto {
 
     private List<BookDto> books;
 
-    private Long userId;
-
     public static CollectionDto mapEntityToDto(CollectionEntity entity) {
         if (entity == null) {
             return null;
@@ -33,7 +31,6 @@ public class CollectionDto {
         CollectionDto dto = new CollectionDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setUserId(entity.getUser().getId());
         List<BookEntity> books = entity.getBooks();
         if (!CollectionUtils.isEmpty(books)) {
             dto.setBooks(books.stream().map(BookDto::mapEntityToDto).collect(Collectors.toList()));

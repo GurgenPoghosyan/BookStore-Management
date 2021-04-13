@@ -3,27 +3,25 @@ package com.internship.bookstore.service;
 import com.internship.bookstore.common.exceptions.AuthorNotFoundException;
 import com.internship.bookstore.common.exceptions.BookNotFoundException;
 import com.internship.bookstore.common.exceptions.GenreNotFoundException;
-import com.internship.bookstore.persistence.entity.AuthorEntity;
-import com.internship.bookstore.persistence.entity.BookEntity;
-import com.internship.bookstore.persistence.entity.GenreEntity;
-import com.internship.bookstore.persistence.entity.PublisherEntity;
+import com.internship.bookstore.common.exceptions.UserNotFoundException;
+import com.internship.bookstore.persistence.entity.*;
 import com.internship.bookstore.persistence.repository.AuthorRepository;
 import com.internship.bookstore.persistence.repository.BookRepository;
 import com.internship.bookstore.persistence.repository.GenreRepository;
 import com.internship.bookstore.persistence.repository.PublisherRepository;
+import com.internship.bookstore.security.session.SessionUser;
 import com.internship.bookstore.service.criteria.BookSearchCriteria;
-import com.internship.bookstore.service.dto.AuthorDto;
-import com.internship.bookstore.service.dto.BookDto;
-import com.internship.bookstore.service.dto.GenreDto;
-import com.internship.bookstore.service.dto.PublisherDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.dto.*;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Gurgen Poghosyan
@@ -36,6 +34,7 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final PublisherRepository publisherRepository;
+    private final FileStorageService fileStorageService;
 
     public BookDto create(BookDto bookDto) {
         if (bookDto.getName() == null) {
@@ -188,6 +187,22 @@ public class BookService {
         bookEntity.getGenres().add(genreEntity);
         BookEntity savedBook = bookRepository.save(bookEntity);
         return BookDto.mapEntityToDto(savedBook);
+    }
+
+    public FileStorageDto uploadFile(MultipartFile multipartFile, Long bookId){
+        FileStorageEntity fileStorageEntity = new FileStorageEntity();
+        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String fileName = System.currentTimeMillis() + extension;
+        fileStorageEntity.setFileName(fileName);
+        fileStorageEntity.setExtension(extension);
+        FileStorageEntity savedFile = fileStorageService.storeFile(multipartFile, fileStorageEntity);
+
+        BookEntity bookEntity = bookRepository.findById(bookId).
+                orElseThrow(() -> new BookNotFoundException(bookId));
+        bookEntity.setBookCoverImage(savedFile);
+        bookRepository.save(bookEntity);
+        return FileStorageDto.mapEntityToDto(savedFile);
     }
 
     public void saveBooks(MultipartFile multipartFile) {

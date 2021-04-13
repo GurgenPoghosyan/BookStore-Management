@@ -1,14 +1,12 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.PublisherService;
-import com.internship.bookstore.service.criteria.AuthorSearchCriteria;
 import com.internship.bookstore.service.criteria.PublisherSearchCriteria;
-import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.PublisherDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/publishers")
+@PreAuthorize("hasAuthority('EDITOR')")
 public class PublisherController {
     private final PublisherService publisherService;
 

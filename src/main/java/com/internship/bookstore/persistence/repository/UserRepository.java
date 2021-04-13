@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "(:status is null or u.status = :status) and " +
             "(:firstName is null or ud.first_name like concat('%',:firstName,'%')) and " +
             "(:lastName is null or ud.last_name like concat('%',:lastName,'%')) and " +
-            "(:role is null or r.role like concat('%',:role,'%')) and " +
+            "(:role is null or r.name like concat('%',:role,'%')) and " +
             "(:zipCode is null or c.zip_code like concat('%',:zipCode,'%'))",nativeQuery = true)
     Page<UserEntity> find(String username,
                           String status,

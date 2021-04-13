@@ -1,13 +1,11 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.persistence.entity.GenreEntity;
 import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.GenreService;
 import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
+import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/genres")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class GenreController {
 
     private final GenreService genreService;

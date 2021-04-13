@@ -1,14 +1,8 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.common.enums.Role;
-import com.internship.bookstore.service.AuthorService;
 import com.internship.bookstore.service.RoleService;
-import com.internship.bookstore.service.criteria.AuthorSearchCriteria;
-import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.RoleDto;
-import com.internship.bookstore.service.model.QueryResponseWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/roles")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class RoleController {
 
     private final RoleService roleService;
