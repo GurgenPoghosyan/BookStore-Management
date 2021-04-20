@@ -14,8 +14,8 @@ public class SessionUser {
     private Long id;
     private String username;
 
-    public static SessionUser mapUserToSessionUser(UserEntity userEntity){
-        if (userEntity == null){
+    public static SessionUser mapUserToSessionUser(UserEntity userEntity) {
+        if (userEntity == null) {
             return null;
         }
         SessionUser sessionUser = new SessionUser();

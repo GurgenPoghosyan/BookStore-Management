@@ -1,6 +1,5 @@
 package com.internship.bookstore.persistence.entity;
 
-import com.internship.bookstore.common.enums.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

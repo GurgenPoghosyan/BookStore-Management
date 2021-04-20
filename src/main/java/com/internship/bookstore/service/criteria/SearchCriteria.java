@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 @Getter
 @Setter
@@ -32,6 +31,6 @@ public class SearchCriteria implements Serializable {
         sortField = this.sortField == null ? "id" : this.sortField;
         Sort.Direction sortDirection = this.sortDirection == null ? Sort.Direction.ASC : Sort.Direction.valueOf(this.sortDirection.toUpperCase());
 
-        return PageRequest.of(page, size, Sort.by(sortDirection,sortField));
+        return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
 }

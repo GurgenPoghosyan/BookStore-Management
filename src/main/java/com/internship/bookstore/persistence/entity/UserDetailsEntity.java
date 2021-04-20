@@ -4,15 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 /**
  * @author Gurgen Poghosyan
  */
 
 @Entity
-@Table(name = "user_details",uniqueConstraints =
-        @UniqueConstraint(columnNames = "email_address"))
+@Table(name = "user_details")
 @Data
 @NoArgsConstructor
 public class UserDetailsEntity {

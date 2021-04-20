@@ -1,6 +1,5 @@
 package com.internship.bookstore.persistence.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -7,7 +7,6 @@ import com.internship.bookstore.service.dto.CollectionDto;
 import com.internship.bookstore.service.model.wrapper.QueryResponseWrapper;
 import com.internship.bookstore.transform.requestbody.collection.AddBookToCollectionRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +34,7 @@ public class CollectionController {
         if (collectionDto.getBooks() == null) {
             throw new NullPointerException("Book list is required");
         }
-        CollectionDto dto = collectionService.create(collectionDto,sessionUser);
+        CollectionDto dto = collectionService.create(collectionDto, sessionUser);
         return ResponseEntity.ok(dto);
     }
 

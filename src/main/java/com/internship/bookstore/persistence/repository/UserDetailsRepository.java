@@ -1,7 +1,6 @@
 package com.internship.bookstore.persistence.repository;
 
 import com.internship.bookstore.persistence.entity.UserDetailsEntity;
-import com.internship.bookstore.service.dto.UserDetailsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,11 +18,11 @@ public interface UserDetailsRepository extends JpaRepository<UserDetailsEntity, 
             "(:phoneNumber is null or ud.phoneNumber like concat('%',:phoneNumber,'%')) and " +
             "(:emailAddress is null or ud.emailAddress like concat('%',:emailAddress,'%') )")
     Page<UserDetailsEntity> find(String firstName,
-                              String lastName,
-                              String address,
-                              String phoneNumber,
-                              String emailAddress,
-                              Pageable pageable);
+                                 String lastName,
+                                 String address,
+                                 String phoneNumber,
+                                 String emailAddress,
+                                 Pageable pageable);
 
     UserDetailsEntity findByEmailAddress(String emailAddress);
 }

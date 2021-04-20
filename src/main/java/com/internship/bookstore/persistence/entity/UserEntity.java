@@ -12,8 +12,7 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @Entity
-@Table(name = "users", uniqueConstraints =
-        @UniqueConstraint(columnNames = "username"))
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor

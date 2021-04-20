@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserSearchCriteria extends SearchCriteria{
+public class UserSearchCriteria extends SearchCriteria {
 
     private String firstName;
 

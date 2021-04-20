@@ -33,14 +33,9 @@ public class RoleController {
         return ResponseEntity.ok(dto);
     }
 
-//    @GetMapping()
-//    public QueryResponseWrapper<RoleDto> getRoles() {
-//        return authorService.getAuthors();
-//    }
-
     @PutMapping("/{id}")
     public ResponseEntity<RoleDto> updateAuthor(@PathVariable Long id,
-                                                  @RequestBody RoleDto roleDto) {
+                                                @RequestBody RoleDto roleDto) {
         RoleDto dto = roleService.update(roleDto, id);
         return ResponseEntity.ok(dto);
     }

@@ -21,7 +21,7 @@ public class UserDetailsService {
 
     public UserDetailsDto create(UserDetailsDto userDetailsDto) {
         UserDetailsEntity detailsEntity = userDetailsRepository.findByEmailAddress(userDetailsDto.getEmailAddress());
-        if (detailsEntity !=null){
+        if (detailsEntity != null) {
             throw new RuntimeException("Email address is already in use");
         }
         UserDetailsEntity entity = UserDetailsDto.mapDtoToEntity(userDetailsDto);

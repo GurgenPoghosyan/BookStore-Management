@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BookSearchCriteria extends SearchCriteria{
+public class BookSearchCriteria extends SearchCriteria {
 
     private String name;
 

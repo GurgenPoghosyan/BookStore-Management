@@ -1,7 +1,6 @@
 package com.internship.bookstore.persistence.repository;
 
 import com.internship.bookstore.persistence.entity.BookEntity;
-import com.internship.bookstore.service.dto.BookDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,7 +27,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
             "(:maxPageSize is null or b.num_pages <= :maxPageSize) and " +
             "(:authorName is null or a.author_name like concat('%',:authorName,'%')) and " +
             "(:genreName is null or g.genre like concat('%',:genreName,'%')) and " +
-            "(:publisherName is null or p.publisher_name like concat('%',:publisherName,'%'))",nativeQuery = true)
+            "(:publisherName is null or p.publisher_name like concat('%',:publisherName,'%'))", nativeQuery = true)
     Page<BookEntity> find(String name,
                           Double minRating,
                           String startDate,

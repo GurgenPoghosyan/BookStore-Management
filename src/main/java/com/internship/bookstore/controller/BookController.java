@@ -1,6 +1,5 @@
 package com.internship.bookstore.controller;
 
-import com.internship.bookstore.security.session.SessionUser;
 import com.internship.bookstore.service.BookService;
 import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.criteria.BookSearchCriteria;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
-import static com.internship.bookstore.security.session.SessionUser.SESSION_USER_KEY;
 
 /**
  * @author Gurgen Poghosyan
@@ -106,24 +103,25 @@ public class BookController {
     @PreAuthorize("hasAnyAuthority('EDITOR')")
     public ResponseEntity<FileStorageDto> uploadFile(@RequestParam("image") MultipartFile file,
                                                      @PathVariable Long id) {
-        FileStorageDto fileStorageDto = bookService.uploadFile(file,id);
+        FileStorageDto fileStorageDto = bookService.uploadFile(file, id);
         return ResponseEntity.ok(fileStorageDto);
     }
+
+//    @PostMapping("/upload")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public void uploadBooks(@RequestParam("books") MultipartFile multipartFile) {
+//        csvReaderService.csvBooksProcessor(multipartFile);
+//    }
 
     @PostMapping("/upload")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void uploadBooks(@RequestParam("books") MultipartFile multipartFile) {
-        csvReaderService.csvBooksProcessor(multipartFile);
+        bookService.saveBooks(multipartFile);
     }
-
-//    @PostMapping("/upload")
-//    public void uploadBooks(@RequestParam("books") MultipartFile multipartFile) {
-//        bookService.saveBooks(multipartFile);
-//    }
 
     @PostMapping("/genres/upload")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void uploadGenres(@RequestParam("genre-to-book") MultipartFile multipartFile) {
-        csvReaderService.csvAssignGenreToBook(multipartFile);
+        bookService.assignGenreToBook(multipartFile);
     }
 }

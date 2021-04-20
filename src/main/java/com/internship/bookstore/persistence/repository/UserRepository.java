@@ -6,8 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
-
 /**
  * @author Gurgen Poghosyan
  */
@@ -25,7 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "(:firstName is null or ud.first_name like concat('%',:firstName,'%')) and " +
             "(:lastName is null or ud.last_name like concat('%',:lastName,'%')) and " +
             "(:role is null or r.name like concat('%',:role,'%')) and " +
-            "(:zipCode is null or c.zip_code like concat('%',:zipCode,'%'))",nativeQuery = true)
+            "(:zipCode is null or c.zip_code like concat('%',:zipCode,'%'))", nativeQuery = true)
     Page<UserEntity> find(String username,
                           String status,
                           String firstName,

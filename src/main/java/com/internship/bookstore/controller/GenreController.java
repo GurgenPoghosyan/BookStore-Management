@@ -1,5 +1,6 @@
 package com.internship.bookstore.controller;
 
+import com.internship.bookstore.common.util.CsvParser;
 import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.GenreService;
 import com.internship.bookstore.service.criteria.GenreSearchCriteria;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * @author Gurgen Poghosyan
@@ -24,6 +23,7 @@ public class GenreController {
 
     private final GenreService genreService;
     private final CSVReaderService csvReaderService;
+    private final CsvParser genreCsvParser;
 
     @PostMapping()
     public ResponseEntity<GenreDto> createGenre(@RequestBody GenreDto genreDto) {
@@ -58,7 +58,7 @@ public class GenreController {
     }
 
     @PostMapping("/upload")
-    public List<GenreDto> readGenre(@RequestParam("genres") MultipartFile multipartFile) {
-        return csvReaderService.csvGenreProcessor(multipartFile);
+    public void readGenre(@RequestParam("genres") MultipartFile multipartFile) {
+        genreService.saveGenres(multipartFile);
     }
 }

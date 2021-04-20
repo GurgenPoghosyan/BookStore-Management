@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-
 import java.util.List;
 
 import static com.internship.bookstore.security.session.SessionUser.SESSION_USER_KEY;

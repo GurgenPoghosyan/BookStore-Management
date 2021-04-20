@@ -41,7 +41,7 @@ public class PublisherController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PublisherDto> updatePublisher(@PathVariable Long id,
-                                                  @RequestBody PublisherDto publisherDto) {
+                                                        @RequestBody PublisherDto publisherDto) {
         PublisherDto dto = publisherService.update(publisherDto, id);
         return ResponseEntity.ok(dto);
     }

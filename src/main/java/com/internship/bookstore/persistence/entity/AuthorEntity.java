@@ -25,11 +25,6 @@ public class AuthorEntity {
     @Column(name = "author_name")
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "books_authors",
-            joinColumns = @JoinColumn(name = "author_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors")
     private List<BookEntity> books;
 }

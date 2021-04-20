@@ -4,7 +4,6 @@ import com.internship.bookstore.persistence.entity.CollectionEntity;
 import com.internship.bookstore.persistence.entity.CommunityEntity;
 import com.internship.bookstore.persistence.entity.UserEntity;
 import lombok.Data;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;

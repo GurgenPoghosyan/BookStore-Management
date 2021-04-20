@@ -1,6 +1,5 @@
 package com.internship.bookstore.service;
 
-import com.internship.bookstore.common.enums.Role;
 import com.internship.bookstore.common.exceptions.RoleNotFoundException;
 import com.internship.bookstore.persistence.entity.RoleEntity;
 import com.internship.bookstore.persistence.repository.RoleRepository;

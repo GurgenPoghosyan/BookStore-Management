@@ -1,7 +1,5 @@
 package com.internship.bookstore.service.dto;
 
-import com.internship.bookstore.common.enums.Role;
-import com.internship.bookstore.persistence.entity.AuthorEntity;
 import com.internship.bookstore.persistence.entity.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;

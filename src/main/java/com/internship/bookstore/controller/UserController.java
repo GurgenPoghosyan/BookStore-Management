@@ -13,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-
 import static com.internship.bookstore.security.session.SessionUser.SESSION_USER_KEY;
 
 /**
@@ -84,14 +82,14 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<FileStorageDto> uploadFile(@RequestParam("image") MultipartFile file,
                                                      @ModelAttribute(SESSION_USER_KEY) SessionUser sessionUser) {
-        FileStorageDto fileStorageDto = userService.uploadFile(file,sessionUser);
+        FileStorageDto fileStorageDto = userService.uploadFile(file, sessionUser);
         return ResponseEntity.ok(fileStorageDto);
     }
 
     @PostMapping("/upload")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Map<String, String> readUser(@RequestParam("users") MultipartFile multipartFile) {
-        return userService.saveUsers(multipartFile);
+    public void readUser(@RequestParam("users") MultipartFile multipartFile) {
+        userService.saveUsers(multipartFile);
     }
 
     @GetMapping("/session")
