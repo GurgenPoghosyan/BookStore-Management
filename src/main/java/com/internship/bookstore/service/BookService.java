@@ -252,11 +252,12 @@ public class BookService {
         String cvsSplitBy = ";";
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(cvsSplitBy);
                 BookEntity bookEntity = bookRepository.findById(Long.parseLong(values[0])).orElseThrow(() -> new BookNotFoundException(Long.parseLong(values[0])));
                 GenreEntity genreEntity = genreRepository.findById(Long.parseLong(values[1])).orElseThrow(() -> new GenreNotFoundException(Long.parseLong(values[1])));
-                bookEntity.getGenres().add(genreEntity);
+                bookEntity.setGenres(List.of(genreEntity));
                 bookRepository.save(bookEntity);
             }
         } catch (IOException e) {
@@ -278,7 +279,7 @@ public class BookService {
                 executorService.submit(thread);
             }
             executorService.shutdown();
-            FileUtils.deleteDirectory(parentCsv.getParentFile());
+//            FileUtils.deleteDirectory(parentCsv.getParentFile());
         } catch (Exception e) {
             e.printStackTrace();
         }

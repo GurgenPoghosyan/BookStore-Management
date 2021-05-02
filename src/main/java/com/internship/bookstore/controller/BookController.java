@@ -1,7 +1,6 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.service.BookService;
-import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.criteria.BookSearchCriteria;
 import com.internship.bookstore.service.dto.AuthorDto;
 import com.internship.bookstore.service.dto.BookDto;
@@ -28,7 +27,6 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-    private final CSVReaderService csvReaderService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('EDITOR')")
@@ -106,12 +104,6 @@ public class BookController {
         FileStorageDto fileStorageDto = bookService.uploadFile(file, id);
         return ResponseEntity.ok(fileStorageDto);
     }
-
-//    @PostMapping("/upload")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    public void uploadBooks(@RequestParam("books") MultipartFile multipartFile) {
-//        csvReaderService.csvBooksProcessor(multipartFile);
-//    }
 
     @PostMapping("/upload")
     @PreAuthorize("hasAuthority('ADMIN')")

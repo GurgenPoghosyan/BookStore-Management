@@ -1,7 +1,6 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.common.util.CsvParser;
-import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.GenreService;
 import com.internship.bookstore.service.criteria.GenreSearchCriteria;
 import com.internship.bookstore.service.dto.GenreDto;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class GenreController {
 
     private final GenreService genreService;
-    private final CSVReaderService csvReaderService;
     private final CsvParser genreCsvParser;
 
     @PostMapping()

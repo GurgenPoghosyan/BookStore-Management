@@ -12,7 +12,7 @@ import java.util.List;
  * @author Gurgen Poghosyan
  */
 @Entity
-@Table(name = "books")
+@Table(name = "books",indexes = @Index(columnList = "book_name"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +38,7 @@ public class BookEntity {
     @Column(name = "book_ISBN")
     private String isbn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private PublisherEntity publisher;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -49,7 +49,7 @@ public class BookEntity {
     )
     private List<GenreEntity> genres = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "book_id"),

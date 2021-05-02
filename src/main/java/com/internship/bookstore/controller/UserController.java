@@ -1,7 +1,6 @@
 package com.internship.bookstore.controller;
 
 import com.internship.bookstore.security.session.SessionUser;
-import com.internship.bookstore.service.CSVReaderService;
 import com.internship.bookstore.service.UserService;
 import com.internship.bookstore.service.criteria.UserSearchCriteria;
 import com.internship.bookstore.service.dto.FileStorageDto;
@@ -25,7 +24,6 @@ import static com.internship.bookstore.security.session.SessionUser.SESSION_USER
 public class UserController {
 
     private final UserService userService;
-    private final CSVReaderService csvReaderService;
 
     @PostMapping("/registration")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
@@ -71,12 +69,6 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userService.delete(id);
     }
-
-//    @PostMapping("/upload")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    public void readUser(@RequestParam("users") MultipartFile multipartFile) {
-//        csvReaderService.csvUsersProcessor(multipartFile);
-//    }
 
     @PostMapping("/files/upload")
     @PreAuthorize("hasAnyAuthority('USER')")
